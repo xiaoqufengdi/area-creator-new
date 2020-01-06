@@ -47,64 +47,20 @@
 
     </el-container>
 
-<!--    <div class="hc-reader-login" v-loading="loading">
-        <div class="hc-reader-login__left-block">
-            <div class="hc-reader-login__pic-container">
-                <img alt="VIEW THE SUBMITTED FROM THE STUDENT" src="../assets/stu.png"/>
-            </div>
-        </div>
-        <div class="hc-reader-login__middle-block">
-            <div class="hc-reader-login__logo">
-                &lt;!&ndash;				<img alt="三有果" src="../assets/logo.png"/>&ndash;&gt;
-                <div style="color:#403e3e;font-size: 28px;font-weight: bolder;font-family: fantasy;">三有果智能批阅系统</div>
-                <div style="color:#a29f9f;">一个让批阅更简单高效的智能批阅平台</div>
-            </div>
-            <div class="hc-reader-login__input-area">
-                <div class="hc-reader-login__input-wrap">
-                    <el-input
-                            placeholder="请填写用户名"
-                            v-model="name">
-                        <i class="iconfont icon-yonghu1" slot="prefix"></i>
-                    </el-input>
-                </div>
-                <div class="hc-reader-login__input-wrap">
-                    <el-input
-                            placeholder="请填写密码" type="password"
-                            v-model="password">
-                        <i class="iconfont icon-mima1" slot="prefix"></i>
-                    </el-input>
-                </div>
-                <div class="hc-reader-login__input-wrap hc-reader-login__input-wrap&#45;&#45;left">
-                    <el-checkbox @change="(value)=>{if(!value)this.autoLogin=false;}" v-model="rememberPass">记住密码
-					</el-checkbox>
-                </div>
-                <div class="hc-reader-login__input-wrap hc-reader-login__input-wrap&#45;&#45;left">
-                    <el-checkbox @change="(value)=>{if(value)this.rememberPass=true;}" v-model="autoLogin">自动登录
-					</el-checkbox>
-                </div>
-            </div>
-            <div class="hc-reader-login__input-wrap">
-                <el-button @click="login" class="hc-reader-login__button hc-reader-login__button&#45;&#45;login"
-                           type="primary">登录
-				</el-button>
-            </div>
-        </div>
-    </div>-->
-
 </template>
 
 <script>
     import {mutations_const} from "../store/StoreConstant";
-    import {NetUtil} from '../utils/NetUtil.js'
-    import URL from "../utils/request.js";
+    import  request from '../utils/request'
+    import URL from "../utils/UrlConfig";
     import {ConstJsonManager} from "../utils/ConstJsonManager";
 
     export default {
         name: "Login",
         data() {
             return {
-                name: '',
-                password: '',
+                name: '17671716649',
+                password: '123456',
                 rememberPass: true,
 //                autoLogin: true,
                 loading: false
@@ -123,9 +79,21 @@
                     return
                 }
                 this.loading = true;
-                NetUtil.post(URL.System.login, {username: this.name, password: this.password, type: 5})
+
+                //测试代码
+/*                this.loading = false;
+                if (this.rememberPass) {
+                    ConstJsonManager.set("login", {name: this.name, password: this.password, token: "111111" })
+                }else{
+                    ConstJsonManager.set("login", { token: res.token })
+                }
+                NetUtil.updToken();
+                this.$router.push({path: '/base-content/reader-monitoring'});*/
+
+
+                request.account.login({telphone: this.name, password: this.password})
                     .then(res => {
-                        this.loading = false;
+                        console.log(res);
                         /*ConstJsonManager.set('rememberPass', this.rememberPass);
                         ConstJsonManager.set('autoLogin', this.autoLogin);*/
                         if (this.rememberPass) {
@@ -138,7 +106,6 @@
                         this.$router.push({path: '/base-content/reader-monitoring'})
                     })
                     .catch(err => {
-                        this.loading = false;
                         console.error(err)
                     })
                     .finally(() => {

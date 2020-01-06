@@ -1,14 +1,11 @@
-//增加
-export const INCREMENT = "INCREMENT";
-
-
-//减少
-export const DECREMENT = "DECREMENT";
-
-export const MULTIPLICATION = "multiplication";
 
 
 const actions_const = {
+    "GET_NAV_MENUS": "getNavMenus",
+
+
+
+
     "GET_STUDENTS": "getStudents",
     "GET_LOGIN_MEMBER": "getLoginMember",
     'GET_CLASS_TEACHING_ASSISTANT':'getClassTeachingAssistant'

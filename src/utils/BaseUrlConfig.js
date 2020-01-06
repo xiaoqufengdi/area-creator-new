@@ -1,19 +1,15 @@
 let apiUrl;
 
-let isProd = true;
+let isProd = false;
 
 if (isProd) {
 
     apiUrl = 'https://sygbackstage2.hongchentech.com/';//生产环境
 } else {
 
-    apiUrl = 'https://test.sygbackstage2.hongchentech.com/';//测试环境
+    apiUrl = "http://192.168.1.65:8901/"//'https://test.sygbackstage2.hongchentech.com/';//测试环境
 }
 
-let isShow = false;
-if (isShow) {
-    apiUrl = 'https://show.hongchentech.com/';//演示环境
-}
 
 
 export { apiUrl, isProd}
