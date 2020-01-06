@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 // import HelloWorld from '@/components/HelloWorld';
 import Login from "@/components/Login";
-import BaseContent from "@/components/BaseContent";
+import BaseContent from "@/components/BaseConent";
 
 import ReaderMonitoring from "@/components/ReaderMonitoring/ReaderMonitoring";
 import ResultsQuery from "@/components/ResultsQuery/ResultsQuery";
