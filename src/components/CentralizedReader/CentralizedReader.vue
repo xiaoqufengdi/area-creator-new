@@ -1,6 +1,6 @@
 <template>
     <div>
-
+        集中批阅
     </div>
 
 </template>

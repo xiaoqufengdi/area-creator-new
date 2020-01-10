@@ -1,7 +1,6 @@
 
 
 const actions_const = {
-    "GET_NAV_MENUS": "getNavMenus",
 
 
 
@@ -11,15 +10,9 @@ const actions_const = {
     'GET_CLASS_TEACHING_ASSISTANT':'getClassTeachingAssistant'
 };
 const mutations_const = {
-    "RESET_STUDENTS":"RESET_STUDENTS",
-    "UPDATE_LOGIN_MEMBER":"UPDATE_LOGIN_MEMBER",
-    "UPD_HEIGHT":"UPD_HEIGHT" ,
-    "UPD_WIDTH":"UPD_WIDTH",
-    "UPD_BLE_STATE":"UPD_BLE_STATE",
-    'UPD_ROUTE':'UPD_ROUTE',
-    'UPD_FIRST_PAGE':'UPD_FIRST_PAGE',
-    "RESET_LOGIN_MEMBER":"RESET_LOGIN_MEMBER",
-    'UPDATE_CLASS_TEACHING_ASSISTANT':'UPDATE_CLASS_TEACHING_ASSISTANT'
+    "GET_NAV_MENUS": "getNavMenus",
+
+
 };
 export
 {

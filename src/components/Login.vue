@@ -50,10 +50,11 @@
 </template>
 
 <script>
-    import {mutations_const} from "../store/StoreConstant";
     import  request from '../utils/request'
     import URL from "../utils/UrlConfig";
     import {ConstJsonManager} from "../utils/ConstJsonManager";
+    import {mutations_const, actions_const} from "../store/StoreConstant";
+
 
     export default {
         name: "Login",
@@ -81,21 +82,25 @@
                 this.loading = true;
 
                 //测试代码
-/*                this.loading = false;
+                setTimeout(()=>{
+                    this.loading = false;
+                }, 1000);
                 if (this.rememberPass) {
-                    ConstJsonManager.set("login", {name: this.name, password: this.password, token: "111111" })
+                    ConstJsonManager.set("login", {name: this.name, password: this.password, token: "abcddskskskk" })
                 }else{
                     ConstJsonManager.set("login", { token: res.token })
                 }
-                NetUtil.updToken();
-                this.$router.push({path: '/base-content/reader-monitoring'});*/
+                //NetUtil.updToken();
+                this.$store.commit(mutations_const.GET_NAV_MENUS, 1);
+                let currentMenus = this.$store.state.member.currentMenus;
 
-
-                request.account.login({telphone: this.name, password: this.password})
+                this.$router.push({path: currentMenus[0].path});
+                //this.$router.push({path: `/index/${currentMenus[0].path}`});
+/*                request.account.login({telphone: this.name, password: this.password})
                     .then(res => {
                         console.log(res);
-                        /*ConstJsonManager.set('rememberPass', this.rememberPass);
-                        ConstJsonManager.set('autoLogin', this.autoLogin);*/
+                        /!*ConstJsonManager.set('rememberPass', this.rememberPass);
+                        ConstJsonManager.set('autoLogin', this.autoLogin);*!/
                         if (this.rememberPass) {
                             ConstJsonManager.set("login", {name: this.name, password: this.password, token: res.token })
                         }else{
@@ -110,8 +115,7 @@
                     })
                     .finally(() => {
                         this.loading = false;
-                    })
-
+                    })*/
             },
 
             keyUp(e) {

@@ -9,7 +9,7 @@ import ResultsQuery from "@/components/ResultsQuery/ResultsQuery";
 import StudentManagement from "@/components/StudentManagement/StudentManagement";
 import TeachersManagement from "@/components/TeachersManagement/TeachersManagement";
 import CentralizedReader from "@/components/CentralizedReader/CentralizedReader";
-import OrganizationExam from "@/components/OrganizationExam/OrganizationExam";
+import ExamManagement from "@/components/ExamManagement/ExamManagement";
 import SetReviewTask from "@/components/SetReviewTask/SetReviewTask";
 
 
@@ -31,7 +31,7 @@ const router = new Router({
             }
         },
         {
-            path: "/base-content",
+            path: "/index",
             component: BaseContent,
             children:[
 
@@ -61,9 +61,9 @@ const router = new Router({
                     component: CentralizedReader
                 },
                 {
-                    path: "organization-exam",
-                    name: "OrganizationExam",
-                    component: OrganizationExam
+                    path: "exam-management",
+                    name: "ExamManagement",
+                    component: ExamManagement
                 },
                 {
                     path: "set-review-task",

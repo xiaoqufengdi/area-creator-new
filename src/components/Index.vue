@@ -15,11 +15,17 @@
             return {}
         },
         methods: {},
-        computed: {},
+        computed: {
+
+        },
+        mounted(){
+            console.log(this.$router);
+        },
         components: {Header}
     }
 </script>
-<style scoped>
+<style scoped  lang="less">
+    @import "../style/theme.less";
     .hc-base-content{
         width: 100%;
         height: 100%;
@@ -29,7 +35,8 @@
 
     }
     .hc-base-main{
-        background: #F5F5F5;
+        background: @color-background;
+        padding: 10px 0px 0px;
     }
 
 </style>
