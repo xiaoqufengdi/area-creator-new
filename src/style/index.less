@@ -1,6 +1,6 @@
 
-/*@import "./icon.less";
-@import "./theme.less";*/
+/*@import "./icon.less";*/
+@import "./theme.less";
 
 html,body, #app{
   width: 100%;
@@ -19,4 +19,18 @@ html,body, #app{
   text-align: center;
   //color: @color;
 
+}
+
+.el-input__inner:focus{
+  border: 1px solid @color;
+}
+.el-year-table td.today .cell{
+  color: @color;
+}
+.el-year-table td .cell:hover, .el-year-table td.current:not(.disabled) .cell {
+  color: @color;
+}
+
+.el-select .el-input.is-focus .el-input__inner{
+  border-color: @color;
 }

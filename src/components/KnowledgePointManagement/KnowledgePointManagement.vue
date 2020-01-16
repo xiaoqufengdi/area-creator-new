@@ -1,9 +1,9 @@
 <template>
-    <el-row class="hc-main-student">
+    <el-row class="hc-main-teacher">
         <el-col :xs="3" :md="4" :lg="5">blank </el-col>
         <el-col :xs="18" :md="16" :lg="14" class="hc-main-center">
-            <el-row class="hc-main-student-selected">
-                <el-col :span="14" class="first">
+            <el-row class="hc-main-teacher-selected">
+                <el-col :span="16" class="first">
                     <el-select size="medium" v-model="selectedSubject" placeholder="学科">
                         <el-option
                                 v-for="item in subjects"
@@ -21,24 +21,23 @@
                         </el-option>
                     </el-select>
                     <el-input size="medium"
-                              placeholder="输入学生姓名、编号"
+                              placeholder="输入老师姓名、编号"
                               prefix-icon="el-icon-search"
-                              v-model="student">
+                              v-model="teacher">
                         <!--<el-button slot="append" class="myButton" type="primary">搜索</el-button>-->
                     </el-input>
                     <el-button class="hc-main-selected-search" size="medium" type="primary">搜索</el-button>
                 </el-col>
-                <el-col :span="10" class="second">
+                <el-col :span="8" class="second">
                     <el-button size="medium">刷新</el-button>
                     <el-button size="medium" type="primary" plain>导入</el-button>
-                    <el-button size="medium" type="primary" plain>导出</el-button>
                     <el-button size="medium" type="primary">添加</el-button>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="24">
 
-                    学生管理
+                    教师管理
                 </el-col>
             </el-row>
         </el-col>
@@ -69,7 +68,7 @@
                     label: '高三（1）班'
                 }],
                 selectedClass: "",
-                student: null
+                teacher: null
             }
         }
     }
@@ -77,7 +76,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-    .hc-main-student{
+    .hc-main-teacher{
         height: 100%;
         .el-col{
             height: 100%;
@@ -86,7 +85,7 @@
             background: white;
             padding:10px 30px;
         }
-        .hc-main-student-selected{
+        .hc-main-teacher-selected{
             margin: 15px 5px;
             .first{
                 text-align: left;

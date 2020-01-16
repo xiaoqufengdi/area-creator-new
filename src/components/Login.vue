@@ -8,7 +8,7 @@
                     <div style="margin:60px auto 25px">
                         <img alt="三有果" style="width:43px; height:50px;" src="../assets/ic_logo@2x.png"/>
                         <!--<div style="color:#403e3e;font-size: 28px;font-weight: bolder;font-family: fantasy;">三有果智能批阅系统</div>-->
-                        <div class="hc-reader-login_title"><span>欢迎来到智能批阅系统</span></div>
+                        <div class="hc-reader-login_title"><span>欢迎来到智能圈码系统</span></div>
                         <div class="hc-reader-login_title2"><span>WELCOME TO LOGIN</span></div>
                     </div>
                     <div class="hc-reader-login__input-area">
@@ -94,7 +94,7 @@
                 this.$store.commit(mutations_const.GET_NAV_MENUS, 1);
                 let currentMenus = this.$store.state.member.currentMenus;
 
-                this.$router.push({path: currentMenus[0].path});
+                this.$router.push({path: currentMenus[currentMenus.length - 1].path});
                 //this.$router.push({path: `/index/${currentMenus[0].path}`});
 /*                request.account.login({telphone: this.name, password: this.password})
                     .then(res => {
@@ -163,9 +163,10 @@
         border-radius:5px;
     }
 </style>
-<style scoped >
+<style scoped  lang="less">
+    @import "../style/theme.less";
     .hc-reader-login__logo{
-        background:  url("../assets/ic_bg@2x.png") no-repeat;
+        background:  @color;/*url("../assets/ic_bg@2x.png") no-repeat;*/
         background-size: 100%;
         width: 100%;
         height: 100%;
@@ -194,7 +195,7 @@
         font-size:18px;
         font-family:Microsoft YaHei;
         font-weight:bold;
-        color:rgba(27,148,255,1);
+        color:@color;
         line-height:25px;
         margin: 15px auto;
     }
@@ -222,9 +223,10 @@
         border-radius: 20px;
      /*   background: url("../assets/ic_button@2x.png") no-repeat;
         background-size: 100%;*/
-        background: #1B94FF;
-        -moz-box-shadow: 0px 1px 1px #1DABFF; /* 老的 Firefox */
-        box-shadow: 0px 1px 1px #1DABFF;
+        background: @color;
+        &:hover{
+            background: @color-hover;
+        }
     }
     .forgetPassword{
         width:39px;

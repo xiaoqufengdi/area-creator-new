@@ -36,7 +36,7 @@
     }
     .hc-base-main{
         background: @color-background;
-        padding: 10px 0px 0px;
+        padding: 5px 0px 0px;
     }
 
 </style>

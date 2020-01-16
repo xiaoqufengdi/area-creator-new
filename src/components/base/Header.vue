@@ -21,7 +21,7 @@
                     <el-col :span="20">
                         <!--菜单区域-->
                         <el-menu class="hc-header-menu"
-                                 :default-active="menus[0] ? menus[0].name: null"
+                                 :default-active="menus.length ? menus[menus.length -1].name: null"
                                  mode="horizontal"
                             @select="handleSelect"    text-color="#FFFFFF"   active-text-color="#000000"
                         >
@@ -45,6 +45,8 @@
             }
         },
         created(){
+            console.log(this.$route);
+
             //console.log(this.$store.state.member.currentMenus);
 
         },
@@ -72,12 +74,11 @@
 
     .hc-header{
         height: 100%;
-        background:rgba(27,148,255,1);
-
+        background: @color;
         font-size:16px;
         /*font-family:Microsoft YaHei;*/
         font-weight:400;
-        color: rgba(255,255,255,1)
+        color: @color-font;
     }
     .hc-header .el-col{
         height: 100%;
@@ -120,6 +121,7 @@
         .is-active{
             background-color: @color-selected !important;
             border-bottom:none;
+            color:@color-font !important;
         }
         li{
             width:100px;

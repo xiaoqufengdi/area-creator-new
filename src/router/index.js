@@ -4,13 +4,11 @@ import Router from 'vue-router'
 import Login from "@/components/Login";
 import BaseContent from "@/components/index";
 
-import ReaderMonitoring from "@/components/ReaderMonitoring/ReaderMonitoring";
-import ResultsQuery from "@/components/ResultsQuery/ResultsQuery";
-import StudentManagement from "@/components/StudentManagement/StudentManagement";
-import TeachersManagement from "@/components/TeachersManagement/TeachersManagement";
-import CentralizedReader from "@/components/CentralizedReader/CentralizedReader";
-import ExamManagement from "@/components/ExamManagement/ExamManagement";
-import SetReviewTask from "@/components/SetReviewTask/SetReviewTask";
+import ChapterManagement from "@/components/ChapterManagement/ChapterManagement";
+import DirectoryManagement from "@/components/DirectoryManagement/DirectoryManagement";
+import KnowledgePointManagement from "@/components/KnowledgePointManagement/KnowledgePointManagement";
+import TeachingAssistantManagement from "@/components/TeachingAssistantManagement/TeachingAssistantManagement";
+import TitleDisplay from "@/components/TeachingAssistantManagement/TitleDisplay";
 
 
 Vue.use(Router);
@@ -36,45 +34,35 @@ const router = new Router({
             children:[
 
                 {
-                    path: "teachers-management",
-                    name: "TeachersManagement",
-                    component: TeachersManagement
+                    path: "directory-management",
+                    name: "DirectoryManagement",
+                    component: DirectoryManagement
                 },
                 {
-                    path: "student-management",
-                    name: "StudentManagement",
-                    component: StudentManagement
+                    path: "Chapter-management",
+                    name: "ChapterManagement",
+                    component: ChapterManagement
                 },
                 {
-                    path: 'reader-monitoring',
-                    name: 'ReaderMonitoring',
-                    component: ReaderMonitoring
+                    path: 'knowledge-point-management',
+                    name: 'KnowledgePointManagement',
+                    component: KnowledgePointManagement
                 },
                 {
-                    path: "results-query",
-                    name: "ResultsQuery",
-                    component: ResultsQuery
+                    path: "teaching-assistant-management",
+                    name: "TeachingAssistantManagement",
+                    component: TeachingAssistantManagement,
                 },
                 {
-                    path: "centralized-reader",
-                    name: "CentralizedReader",
-                    component: CentralizedReader
-                },
-                {
-                    path: "exam-management",
-                    name: "ExamManagement",
-                    component: ExamManagement
-                },
-                {
-                    path: "set-review-task",
-                    name: "SetReviewTask",
-                    component: SetReviewTask
+                    path: "title-display",
+                    name: "TitleDisplay",
+                    component: TitleDisplay
                 }
             ]
         },
-        {
+   /*     {
             path:"*", redirect: "/login"
-        }
+        }*/
     ]
 });
 

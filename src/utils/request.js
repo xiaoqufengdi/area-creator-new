@@ -62,8 +62,19 @@ const request = {
         },
         login: params=>post(URL.System.login, JSON.stringify(params))
     }
+
 };
 
+request.upload = (url, params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post(url, params, { headers: { 'Content-Type': 'multipart/form-data' } }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+    //axios.post("./docToHtml/test/", {file: formData}, { headers: { 'Content-Type': 'multipart/form-data' } })
+}
 /*
 //更新token
 request.updToken = () => {
