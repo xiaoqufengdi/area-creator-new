@@ -5,7 +5,7 @@
         </el-col>
         <el-col :xs="22" :md="22" :lg="20" class="hc-main-center">
             <el-row class="hc-main-header">
-                <el-col :span="24">提示： <span style="color:red;">检测到word原稿不存在，请重新上传</span>
+                <el-col :span="10">提示： <span style="color:red;">检测到word原稿不存在，请重新上传</span>
                     <el-upload
                             class="hc-main-header-upload"
                             ref="upload"
@@ -21,7 +21,11 @@
                     </el-upload>
 <!--                    <el-tag size="small"  effect="dark" type="success"> 上传 </el-tag>-->
                     <!--               数学必修1.doc             :on-preview="handlePreview"-->
-                    </el-col>
+                 </el-col>
+                <el-col :span="14">
+                    <el-input-number size="small" :max='maxPage' :min='minPage'  v-model.number="num"   @change="handleChangePage"></el-input-number> <span>共{{pageCount}}页</span>
+<!--                    <button @click="handleGetPage">请求页码 </button>-->
+                </el-col>
             </el-row>
             <el-row class="hc-main-content">
                 <el-col class="hc-main-content-pic"  :span="8"  >
@@ -32,7 +36,7 @@
                 <el-col :span="8" class="hc-main-content-html">
                     <h2>展示HTML页</h2>
                     <section id="myPage" ref="myPage">
-                        <article :style="{border: selectedQuestion.id === question.id ? '1.5px solid red' : '0.5px solid  #0CC689'}" :id="question.id" v-html="question.content" v-for="question in questions">
+                        <article :style="{border: selectedQuestion.questionId === question.questionId ? '1.5px solid red' : '0.5px solid  #0CC689'}" :id="question.questionId" v-html="question.content" v-for="question in questions">
                             {{question.content }}
                         </article>
                         <!--        　　　　　　　　　　　　　　　　　　　　　　　　　　　　　</span></p>
@@ -65,7 +69,7 @@
                     <h2 style="border-bottom: 1px solid #0CC689;">题目校对</h2>
                     <div  style="height:85%;overflow:auto;padding: 5px;">
                         <h5 style="text-align:left;margin:10px 5px 5px;"> <el-tag type="success">内容部分：</el-tag></h5>
-                        <div  :id="selectedQuestion.id" v-show="selectedQuestion.content.length">
+                        <div  :id="selectedQuestion.questionId" v-show="selectedQuestion.content.length">
                             <template v-for="(content, index) in selectedQuestion.content">
                                 <el-input v-if="content.type==='SPAN'" class="hc-main-content-edit-input"
                                           :key="index"
@@ -132,290 +136,150 @@
         data() {
             return {
                 questions: [
-                    {id: "1" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
-                    '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
-                    '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
-                    '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
-                    '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
-                    '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
-                    '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                    '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
-                    '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
-                    '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
-                    '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                    '                                style="width:2.75pt; display:inline-block">&#xa0;</span><span'+
-                    '                                style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '                                style="font-family:NEU-BZ"> 15</span><span style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                    '                                style="width:3.34pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">C</span><span'+
-                    '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 13</span><span'+
-                    '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                    '                                style="width:3.34pt; display:inline-block">&#xa0;</span><span'+
-                    '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
-                    '                                style="font-family:NEU-BZ">17</span></p>'}
-                    ,{id: "2" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
-                    '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
-                    '        style="font-family:方正书宋_GBK">中</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">=</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AC</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:方正书宋_GBK">其周长为</span><span style="font-family:NEU-BZ">20 cm</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
-                    '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
-                    '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
-                    '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                    '        style="width:21.23pt; display:inline-block">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> 5 cm&lt;</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'+
-                    '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">C</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;8 cm</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                    '        style="width:21.82pt; display:inline-block">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                    ,{id: "3" , title:"第3道题",pageNum: 1, content: ['<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span',
-                        '        style="font-family:NEU-BZ">3</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span',
-                        '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">如图</span><span',
-                        '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">已知</span><span',
-                        '        style="font-family:NEU-BZ">∠</span><span style="font-family:NEU-BZ; font-style:italic">AOB</span><span',
-                        '        style="font-family:NEU-BZ">=60°</span><span style="font-family:方正书宋_GBK">,</span><span',
-                        '        style="font-family:方正书宋_GBK">点</span><span style="font-family:NEU-BZ; font-style:italic">P</span><span',
-                        '        style="font-family:方正书宋_GBK">在边</span><span style="font-family:NEU-BZ; font-style:italic">OA</span><span',
-                        '        style="font-family:方正书宋_GBK">上</span><span style="font-family:方正书宋_GBK">,</span><span',
-                        '        style="font-family:NEU-BZ; font-style:italic">OP</span><span style="font-family:NEU-BZ">=12</span><span',
-                        '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">点</span><span',
-                        '        style="font-family:NEU-BZ; font-style:italic">M</span><span style="font-family:方正书宋_GBK">、</span><span',
-                        '        style="font-family:NEU-BZ; font-style:italic">N</span><span style="font-family:方正书宋_GBK">在边</span><span',
-                        '        style="font-family:NEU-BZ; font-style:italic">OB</span><span style="font-family:方正书宋_GBK">上</span><span',
-                        '        style="font-family:方正书宋_GBK">,</span><span style="font-family:NEU-BZ; font-style:italic">PM</span><span',
-                        '        style="font-family:NEU-BZ">=</span><span style="font-family:NEU-BZ; font-style:italic">PN</span><span',
-                        '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">若</span><span',
-                        '        style="font-family:NEU-BZ; font-style:italic">MN</span><span style="font-family:NEU-BZ">=2</span><span',
-                        '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span',
-                        '        style="font-family:NEU-BZ; font-style:italic">OM</span><span style="font-family:NEU-BZ">=</span><span',
-                        '        style="width:1.47pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span',
-                        '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>',
-                        '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span',
-                        '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 3</span><span',
-                        '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span',
-                        '        style="width:8pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">B</span><span',
-                        '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 4</span><span',
-                        '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span',
-                        '        style="width:8.59pt; display:inline-block">&#xa0;</span><span',
-                        '        style="font-family:NEU-BZ">C</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span',
-                        '        style="font-family:NEU-BZ"> 5</span><span style="font-family:方正书宋_GBK; font-style:italic">　</span><span',
-                        '        style="width:8.59pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">D</span><span',
-                        '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 6</span></p>',
-                        '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.002.png" width="171"   height="152" alt=""     style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
-                        '</p>',
-                        '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span  style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span style="font-family:NEU-HZ">3</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
-                        '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.003.png" width="106"    height="178" alt=""   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
-                        '</p>',
-                        '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span style="font-family:NEU-HZ">4</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
-                        '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.004.png" width="152"                           height="133" alt=""                   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
-                        '</p>',
-                        '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span  style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span  style="font-family:NEU-HZ">5</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
-                        '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.005.png" width="201"                        height="137" alt=""      style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
-                        '</p>',
-                        '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span  style="font-family:NEU-HZ">6</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
-                        '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:ignore">&#xa0;</span>',
-                        '</p>'].join("")}
-                    ,{id: "4" , title:"第4道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">4</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">如图</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">在</span><span'+
-                    '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
-                    '        style="font-family:方正书宋_GBK">中</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">=</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AC</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:方正书宋_GBK">点</span><span style="font-family:NEU-BZ; font-style:italic">D</span><span'+
-                    '        style="font-family:方正书宋_GBK">在</span><span style="font-family:NEU-BZ; font-style:italic">AC</span><span'+
-                    '        style="font-family:方正书宋_GBK">上</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:方正书宋_GBK">且</span><span style="font-family:NEU-BZ; font-style:italic">BD</span><span'+
-                    '        style="font-family:NEU-BZ">=</span><span style="font-family:NEU-BZ; font-style:italic">BC</span><span'+
-                    '        style="font-family:NEU-BZ">=</span><span style="font-family:NEU-BZ; font-style:italic">AD</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
-                    '        style="font-family:NEU-BZ">∠</span><span style="font-family:NEU-BZ; font-style:italic">A</span><span'+
-                    '        style="font-family:方正书宋_GBK">等于</span><span style="width:3.65pt; display:inline-block">&#xa0;</span><span'+
-                    '        style="font-family:方正书宋_GBK">(</span><span style="font-family:方正书宋_GBK; font-style:italic">　　</span><span'+
-                    '        style="font-family:方正书宋_GBK">)</span></p>'+
-                    '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 30°</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　　　</span><span style="width:13.55pt; display:inline-block">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> 40°</span><span style="font-family:方正书宋_GBK; font-style:italic">　　　</span><span'+
-                    '        style="width:14.14pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">C</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 45°</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　　　</span><span style="width:14.14pt; display:inline-block">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> 36°</span></p>'}
-                    ,{id: "5" , title:"第5道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">5</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">如图</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">在等腰梯形</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">ABCD</span><span style="font-family:方正书宋_GBK">中</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:NEU-BZ">∠</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">ABC</span><span style="font-family:NEU-BZ">=2∠</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">ACB</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">BD</span><span style="font-family:方正书宋_GBK">平分</span><span'+
-                    '        style="font-family:NEU-BZ">∠</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:NEU-BZ; font-style:italic">AD</span><span'+
-                    '        style="font-family:NEU-BZ">∥</span><span style="font-family:NEU-BZ; font-style:italic">BC</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则图中的等腰三角形有</span><span'+
-                    '        style="width:32.09pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
-                    '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1</span><span'+
-                    '        style="font-family:方正书宋_GBK">个</span><span style="font-family:方正书宋_GBK"> </span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                    '        style="width:30.87pt; display:inline-block">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> 2</span><span style="font-family:方正书宋_GBK">个</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span style="font-family:方正书宋_GBK"> </span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                    '        style="width:20.96pt; display:inline-block">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">C</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> 3</span><span style="font-family:方正书宋_GBK">个</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span style="font-family:方正书宋_GBK"> </span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                    '        style="width:20.96pt; display:inline-block">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> 4</span><span style="font-family:方正书宋_GBK">个</span></p>'}
-                    ,{id: "6" , title:"第6道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
-                    '        style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">6</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
-                    '        style="font-family:方正书宋_GBK">如图</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:方正书宋_GBK">在</span><span style="font-family:NEU-BZ">▱</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">ABCD</span><span style="font-family:方正书宋_GBK">中</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">已知</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AD</span><span style="font-family:NEU-BZ">=8 cm</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
-                    '        style="font-family:NEU-BZ">=6 cm</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">DE</span><span style="font-family:方正书宋_GBK">平分</span><span'+
-                    '        style="font-family:NEU-BZ">∠</span><span style="font-family:NEU-BZ; font-style:italic">ADC</span><span'+
-                    '        style="font-family:方正书宋_GBK">交</span><span style="font-family:NEU-BZ; font-style:italic">BC</span><span'+
-                    '        style="font-family:方正书宋_GBK">边于点</span><span style="font-family:NEU-BZ; font-style:italic">E</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">BE</span><span style="font-family:方正书宋_GBK">等于</span><span'+
-                    '        style="width:27.03pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
-                    '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 2 cm</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span style="font-family:方正书宋_GBK"> </span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                    '        style="width:16.01pt; display:inline-block">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> 4 cm</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　　　　</span><span'+
-                    '        style="width:34.22pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">C</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 6 cm</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic">　　　</span><span style="width:8.72pt; display:inline-block">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> 8 cm</span></p>'}
-                    ,{id: "7" , title:"第7道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
-                    '        style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">7</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
-                    '        style="font-family:方正书宋_GBK">如图</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:方正书宋_GBK">在</span><span style="font-family:NEU-BZ">Rt△</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">ABC</span><span style="font-family:方正书宋_GBK">中</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:NEU-BZ">∠</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">B</span><span style="font-family:NEU-BZ">=90°</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:NEU-BZ; font-style:italic">AC</span><span'+
-                    '        style="font-family:方正书宋_GBK">的垂直平分线</span><span style="font-family:NEU-BZ; font-style:italic">MN</span><span'+
-                    '        style="font-family:方正书宋_GBK">与</span><span style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
-                    '        style="font-family:方正书宋_GBK">交于点</span><span style="font-family:NEU-BZ; font-style:italic">D</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:NEU-BZ">∠</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">BCD</span><span style="font-family:NEU-BZ">=10°</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
-                    '        style="font-family:NEU-BZ">∠</span><span style="font-family:NEU-BZ; font-style:italic">A</span><span'+
-                    '        style="font-family:方正书宋_GBK">的度数是</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic; text-decoration:underline">　　　　</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">&#xa0;</span>'+
-                    '</p>'+
-                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.006.png" width="201"'+
-                    '                                                                                       height="220" alt=""'+
-                    '                                                                                       style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>'+
-                    '</p>'+
-                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span'+
-                    '        style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span'+
-                    '        style="font-family:NEU-HZ">7</span><span style="font-family:方正黑体_GBK">题</span><span'+
-                    '        style="font-family:方正黑体_GBK">)</span></p>'+
-                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.007.png" width="182"'+
-                    '                                                                                       height="227" alt=""'+
-                    '                                                                                       style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>'+
-                    '</p>'}
-                    ,{id: "8" , title:"第8道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">8</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">如图</span><span'+
-                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">在</span><span'+
-                    '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
-                    '        style="font-family:方正书宋_GBK">中</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">=</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">AC</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:NEU-BZ">∠</span><span style="font-family:NEU-BZ; font-style:italic">A</span><span'+
-                    '        style="font-family:NEU-BZ">=40°</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:方正书宋_GBK">点</span><span style="font-family:NEU-BZ; font-style:italic">D</span><span'+
-                    '        style="font-family:方正书宋_GBK">在</span><span style="font-family:NEU-BZ; font-style:italic">AC</span><span'+
-                    '        style="font-family:方正书宋_GBK">上</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">BD</span><span style="font-family:NEU-BZ">=</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">BC</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:方正书宋_GBK">则</span><span style="font-family:NEU-BZ">∠</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">ABD</span><span style="font-family:方正书宋_GBK">的度数是</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic; text-decoration:underline">　　　　</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">&#xa0;</span>'+
-                    '</p>'}
-                    ,{id: "9" , title:"第9道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ">9</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">用反证法证明命题</span><span'+
-                    '        style="font-family:NEU-BZ">“</span><span style="font-family:方正书宋_GBK">三角形中至少有一个角大于或等于</span><span'+
-                    '        style="font-family:NEU-BZ">60°</span><span style="font-family:NEU-BZ">”</span><span'+
-                    '        style="font-family:方正书宋_GBK">时</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                    '        style="font-family:方正书宋_GBK">第一步应假设</span><span'+
-                    '        style="font-family:方正书宋_GBK; font-style:italic; text-decoration:underline">　　　　　</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic; text-decoration:underline">&#xa0;</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                    '        style="font-family:NEU-BZ; font-style:italic">&#xa0;</span>'+
-                    '</p>'}
-
+                    /*            {questionId: "1" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
+                                '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
+                                '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
+                                '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
+                                '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
+                                '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
+                                '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
+                                '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                                '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
+                                '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
+                                '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
+                                '                                style="width:2.75pt; display:inline-block">&#xa0;</span><span'+
+                                '                                style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
+                                '                                style="font-family:NEU-BZ"> 15</span><span style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
+                                '                                style="width:3.34pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">C</span><span'+
+                                '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 13</span><span'+
+                                '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
+                                '                                style="width:3.34pt; display:inline-block">&#xa0;</span><span'+
+                                '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
+                              '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
+                                '                                style="font-family:NEU-BZ">17</span></p>'}
+                  /*              ,{questionId: "2" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
+                                '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
+                                '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
+                                '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
+                                '        style="font-family:方正书宋_GBK">中</span><span style="font-family:方正书宋_GBK">,</span><span'+
+                                '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">=</span><span'+
+                                '        style="font-family:NEU-BZ; font-style:italic">AC</span><span style="font-family:方正书宋_GBK">,</span><span'+
+                                '        style="font-family:方正书宋_GBK">其周长为</span><span style="font-family:NEU-BZ">20 cm</span><span'+
+                                '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
+                                '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
+                                '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
+                                '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
+                                '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                                '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
+                                '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
+                                '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
+                                '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
+                                '        style="width:21.23pt; display:inline-block">&#xa0;</span><span'+
+                                '        style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
+                                '        style="font-family:NEU-BZ"> 5 cm&lt;</span><span'+
+                                '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'+
+                                '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">C</span><span'+
+                                '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
+                                '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;8 cm</span><span'+
+                                '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
+                                '        style="width:21.82pt; display:inline-block">&#xa0;</span><span'+
+                                '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
+                                '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
+                                '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
+                                ,{questionId: "3" , title:"第3道题",pageNum: 1, content: ['<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span',
+                                    '        style="font-family:NEU-BZ">3</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span',
+                                    '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">如图</span><span',
+                                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">已知</span><span',
+                                    '        style="font-family:NEU-BZ">∠</span><span style="font-family:NEU-BZ; font-style:italic">AOB</span><span',
+                                    '        style="font-family:NEU-BZ">=60°</span><span style="font-family:方正书宋_GBK">,</span><span',
+                                    '        style="font-family:方正书宋_GBK">点</span><span style="font-family:NEU-BZ; font-style:italic">P</span><span',
+                                    '        style="font-family:方正书宋_GBK">在边</span><span style="font-family:NEU-BZ; font-style:italic">OA</span><span',
+                                    '        style="font-family:方正书宋_GBK">上</span><span style="font-family:方正书宋_GBK">,</span><span',
+                                    '        style="font-family:NEU-BZ; font-style:italic">OP</span><span style="font-family:NEU-BZ">=12</span><span',
+                                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">点</span><span',
+                                    '        style="font-family:NEU-BZ; font-style:italic">M</span><span style="font-family:方正书宋_GBK">、</span><span',
+                                    '        style="font-family:NEU-BZ; font-style:italic">N</span><span style="font-family:方正书宋_GBK">在边</span><span',
+                                    '        style="font-family:NEU-BZ; font-style:italic">OB</span><span style="font-family:方正书宋_GBK">上</span><span',
+                                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:NEU-BZ; font-style:italic">PM</span><span',
+                                    '        style="font-family:NEU-BZ">=</span><span style="font-family:NEU-BZ; font-style:italic">PN</span><span',
+                                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">若</span><span',
+                                    '        style="font-family:NEU-BZ; font-style:italic">MN</span><span style="font-family:NEU-BZ">=2</span><span',
+                                    '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span',
+                                    '        style="font-family:NEU-BZ; font-style:italic">OM</span><span style="font-family:NEU-BZ">=</span><span',
+                                    '        style="width:1.47pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span',
+                                    '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span',
+                                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 3</span><span',
+                                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span',
+                                    '        style="width:8pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">B</span><span',
+                                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 4</span><span',
+                                    '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span',
+                                    '        style="width:8.59pt; display:inline-block">&#xa0;</span><span',
+                                    '        style="font-family:NEU-BZ">C</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span',
+                                    '        style="font-family:NEU-BZ"> 5</span><span style="font-family:方正书宋_GBK; font-style:italic">　</span><span',
+                                    '        style="width:8.59pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">D</span><span',
+                                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 6</span></p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.002.png" width="171"   height="152" alt=""     style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
+                                    '</p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span  style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span style="font-family:NEU-HZ">3</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.003.png" width="106"    height="178" alt=""   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
+                                    '</p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span style="font-family:NEU-HZ">4</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.004.png" width="152"                           height="133" alt=""                   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
+                                    '</p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span  style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span  style="font-family:NEU-HZ">5</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.005.png" width="201"                        height="137" alt=""      style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
+                                    '</p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span  style="font-family:NEU-HZ">6</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:ignore">&#xa0;</span>',
+                                    '</p>'].join("")}*/
                 ]
-                ,picSrc: "./static/math_47.png",
-                selectedQuestion: {id:null, content: [/*{type: "SPAN", str: "" }, {type: "IMG", src: "", width}*/] }
+                ,picSrc: null,//"./static/math_47.png",
+                selectedQuestion: {questionId:null, content: [/*{type: "SPAN", str: "" }, {type: "IMG", src: "", width}*/] }
                 , currentPageImgs: [
                     // {src: null, width: null, selected: false}
                     ]
 
                 , fileList: []
                 , loading: false
+                , pageCount: 46
+                , minPage: 1
+                , num: 1
             };
         },
-        created(){
+        computed:{
+            maxPage() {
+                return this.minPage + this.pageCount - 1
+            }
 
+        },
+        created(){
+            //取所有页码
+            let bool = localStorage.getItem("isExist");
+            if(bool)
+            {
+                let num = localStorage.getItem("num");
+                num = parseInt(num);
+                this.num = num;
+                this.minPage = num;
+                this.handleChangePage(num)
+            }
 
         },
         mounted(){
             console.log(this.$refs.myPage);
-            let imgs = this.$refs.myPage.querySelectorAll("p>img");
-            imgs.forEach((img)=>{
-                this.currentPageImgs.push({
-                    src: img.src,
-                    width: img.width,
-                    height: img.height,
-                    selected: false
+            if(this.$refs.myPage)
+            {
+                let imgs = this.$refs.myPage.querySelectorAll("p>img");
+                imgs.forEach((img)=>{
+                    this.currentPageImgs.push({
+                        src: img.src,
+                        width: img.width,
+                        height: img.height,
+                        selected: false
+                    });
                 });
-            });
-
-
+            }
         },
         methods: {
             goBack(){
@@ -431,9 +295,9 @@
                 if (articleDOM) {
                     console.log(articleDOM);
                     let arrP = Array.from(articleDOM.children);
-                    this.selectedQuestion.id = articleDOM.id;
+                    this.selectedQuestion.questionId = articleDOM.id;
                     this.selectedQuestion.content = [];
-                    let question = this.questions.find((question)=>question.id === this.selectedQuestion.id)
+                    let question = this.questions.find((question)=>question.questionId === this.selectedQuestion.questionId)
 
                     let type = null;
                     let str = null;
@@ -454,7 +318,9 @@
                             str = str.replace(/[<br/>]/g, "\n");
                             console.log(str);
                         }else{
-                            this.$alert("结构异常")
+                            this.$message('结构异常');
+
+
                         }
                     });
                     // str = str + '<img src="http://img2.imgtn.bdimg.com/it/u=2587022830,2092476314&fm=26&gp=0.jpg" width="100px;">'
@@ -477,7 +343,7 @@
                         range=window.getSelection().getRangeAt(0);
                     }
                     else{
-                        this.$alert("请先在HTML页面内选择题目");
+                        this.$message('请先在HTML页面内选择题目');
                         return null;
                     }
                 }
@@ -531,11 +397,12 @@
             },
             //保存修改
             handleSave(){
-                if (!this.selectedQuestion.id) {
-                    this.$alert("请先选择题目");
+                if (!this.selectedQuestion.questionId) {
+                    this.$message('请先选择题目');
+
                 }
                 let question = this.questions.find(question=>{
-                    return question.id === this.selectedQuestion.id;
+                    return question.questionId === this.selectedQuestion.questionId;
                 });
                 let str = this.selectedQuestion.content[0].str;
                 //大于号和小于号替换
@@ -558,35 +425,130 @@
                 question.content = "<p style='margin-top:0pt; margin-bottom:0pt; font-size:10.5pt; font-family:方正书宋_GBK'>" + this.selectedQuestion.content[0].str  + "</p>";
                 question.isRevise = true;
                 console.log(question);
+
+                this.selectedQuestion = {questionId:null, content: [/*{type: "SPAN", str: "" }, {type: "IMG", src: "", width}*/] }
             },
             beforeUpload(file){
 
                 return true;
             },
             handleSuccess(response, file, fileList){
-                this.$alert("上传成功后端处理中......");
                 console.log(response);
                 console.log(file);
                 console.log(fileList);
 
-                setTimeout(()=>{
-                    this.loading = false;
-                }, 2000)
             },
             handSend(content){
+
+                //取第一页内容展示
                 console.log("send");
+                this.loading = true;
                 console.log(content);
                 let formData = new FormData();
                 formData.append(content.filename, content.file);
+                this.$message('正在上传，请稍后...');
 
-                request.upload("./docToHtml/test/", {file: formData}).then((response)=>{
+                request.upload("./docToHtml/test/",  formData).then((response)=>{
                     console.log(response);
+                    this.$message('上传成功，正在转换成HTML...');
+                    this.loading = false;
+
+                    /*
+                        request.getPageNumber({teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d"}).then(res2=>{
+                            console.log(res2);
+
+                        }).catch(err=>{
+                            console.log(err);
+                        });
+                    */
+
+                    let options = {fileName: response.html};
+                    // options.fileName = options.replace(/\\/g,'\\\\');
+                    request.switchContent(options).then((res1)=>{
+                        console.log("switchContent");
+                        console.log(res1);
+                        request.getPageNumber({teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d"}).then(res2=>{
+                            console.log(res2);
+                            this.minPage = res2.data[0].pageNum;
+                            this.num = res2.data[0].pageNum;
+                            //this.pageCount = res2.data.length;
+
+                            localStorage.setItem("isExist", true);
+                            localStorage.setItem("num", this.num);
+                            //取第一页内容展示
+                            let params = {
+                                teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d",
+                                pageNum: this.num
+                            };
+
+
+                            request.getHTMLByPageNumber(params).then(res3=>{
+                                console.log("第一页内容");
+                                console.log(res3);
+                                this.questions = res3.data.html;
+                                this.picSrc = res3.data.pdf;
+                                this.updateImg()
+                            }).catch((err)=>{
+                                console.log(err);
+                            });
+                        }).catch(err=>{
+                            console.log(err);
+                        });
+                    });
                 }).catch((error)=>{
                     console.log(error);
                 });
-            }
+            },
+
+            handleChangePage(value) {
+                console.log(value);
+                let params = {
+                    teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d",
+                    pageNum: value
+                };
+                request.getHTMLByPageNumber(params).then(res=>{
+                    console.log(res);
+                    this.questions = res.data.html;
+                    this.picSrc = res.data.pdf;
+                    this.updateImg();
+                }).catch((err)=>{
+                    console.log(err);
+                })
+
+            },
+
+            updateImg(){
+                this.$nextTick(()=>{
+
+                    let imgs = this.$refs.myPage.querySelectorAll("p>img");
+                    this.currentPageImgs = [];
+                    imgs.forEach((img)=>{
+                        this.currentPageImgs.push({
+                            src: img.src,
+                            width: img.width,
+                            height: img.height,
+                            selected: false
+                        });
+                    });
+                });
+            },
+
+            // handleGetPage(){
+            //
+            //     let params = {
+            //         teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d",
+            //         pageNum: 47
+            //     };
+            //     request.getHTMLByPageNumber(params).then(res3=>{
+            //         console.log("第一页内容");
+            //         console.log(res3);
+            //
+            //
+            //     }).catch((err)=>{
+            //         console.log(err);
+            //     });
+            // }
         },
-        computed: {},
         components: {}
     }
 

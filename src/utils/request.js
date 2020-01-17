@@ -7,7 +7,7 @@ import {apiUrl} from '../utils/BaseUrlConfig'
 import axios from "axios";
 
 axios.defaults.baseURL = apiUrl;
-axios.defaults.timeout = 30000;
+// axios.defaults.timeout = 30000;
 
 
 const post = function (url, params, key) {
@@ -61,8 +61,11 @@ const request = {
             axios.defaults.headers['Authorization'] = token;
         },
         login: params=>post(URL.System.login, JSON.stringify(params))
-    }
+    },
 
+    //switchContent: params=>post("/htmlToContent/test", JSON.stringify(params)) ,
+    //getPageNumber: params=>post("/htmlToContent/list", JSON.stringify(params)),
+   // getHTMLByPageNumber: params=>post("/htmlToContent/query", JSON.stringify(params)),
 };
 
 request.upload = (url, params)=>{
@@ -74,7 +77,42 @@ request.upload = (url, params)=>{
         })
     });
     //axios.post("./docToHtml/test/", {file: formData}, { headers: { 'Content-Type': 'multipart/form-data' } })
-}
+};
+
+request.switchContent = (params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/htmlToContent/test", params, { headers: { 'Content-Type': 'application/json' } }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+//axios.post("./docToHtml/test/", {file: formData}, { headers: { 'Content-Type': 'multipart/form-data' } })
+};
+
+request.getHTMLByPageNumber = (params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/htmlToContent/query", JSON.stringify(params), { headers: { 'Content-Type': 'application/json'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
+
+
+//getPageNumber: params=>post("/htmlToContent/list", JSON.stringify(params)),
+
+ request.getPageNumber = (params)=>{
+        return new Promise((resolve, reject)=>{
+            axios.post("/htmlToContent/list", JSON.stringify(params), { headers: { 'Content-Type': 'application/json'} }).then(res=>{
+                resolve(res.data)
+            }).catch(err=>{
+                reject(err.data);
+            })
+        });
+    };
+
 /*
 //更新token
 request.updToken = () => {

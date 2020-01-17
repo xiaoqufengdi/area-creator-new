@@ -1,6 +1,6 @@
 <template>
     <el-row class="hc-main-student">
-        <el-col :xs="3" :md="4" :lg="5">blank </el-col>
+        <el-col :xs="3" :md="4" :lg="5"> </el-col>
         <el-col :xs="18" :md="16" :lg="14" class="hc-main-center">
             <el-row class="hc-main-student-selected">
                 <el-col :span="14" class="first">
@@ -42,7 +42,7 @@
                 </el-col>
             </el-row>
         </el-col>
-        <el-col :xs="3" :md="4" :lg="5">blank</el-col>
+        <el-col :xs="3" :md="4" :lg="5"></el-col>
     </el-row>
 </template>
 

@@ -2,8 +2,8 @@
         <el-row class="hc-header">
             <el-col :xs="3" :md="4" :lg="5"> </el-col>
             <el-col :xs="18" :md="16" :lg="14">
-                <el-row class="hc-header-center"  style="border: 0.5px solid orange !important;">
-                    <el-col :span="4" style="text-align:left;">
+                <el-row class="hc-header-center"  ><!-- style="border: 0.5px solid orange !important;"-->
+                    <el-col :span="6" style="text-align:left;">
                         <img class="hc-header-nav_img"
                              src="../../assets/ic_person@2x.png"/>
                         <el-popover
@@ -18,7 +18,7 @@
                             <span slot="reference" class="hc-header-nav_name">{{"admin"}}<img class="hc-header_img_arrow" src="../../assets/ic_arrow_white@2x.png" alt=""></span>
                         </el-popover>
                     </el-col>
-                    <el-col :span="20">
+                    <el-col :span="18">
                         <!--菜单区域-->
                         <el-menu class="hc-header-menu"
                                  :default-active="menus.length ? menus[menus.length -1].name: null"
