@@ -36,7 +36,7 @@
                 <el-col :span="8" class="hc-main-content-html">
                     <h2>展示HTML页</h2>
                     <section id="myPage" ref="myPage">
-                        <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '1.5px solid red' : '0.5px solid  #0CC689'}" :id="question.questionId" v-html="question.content" v-for="question in questions">
+                        <article   :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '1.5px solid red' : '0.5px solid  #0CC689'}" :id="question.questionId" v-html="question.content" v-for="question in questions">
                             {{question.content }}
                         </article>
                         <!--        　　　　　　　　　　　　　　　　　　　　　　　　　　　　　</span></p>
