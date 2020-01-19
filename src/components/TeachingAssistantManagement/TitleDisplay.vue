@@ -24,7 +24,7 @@
                  </el-col>
                 <el-col :span="14">
                     <el-input-number size="small" :max='maxPage' :min='minPage'  v-model.number="num"   @change="handleChangePage"></el-input-number> <span>共{{pageCount}}页</span>
-                   <el-button size="small" type="success"  @click="handleGetPage">测试请求页码 </el-button>
+<!--                   <el-button size="small" type="success"  @click="handleGetPage">测试请求页码 </el-button>-->
                 </el-col>
             </el-row>
             <el-row class="hc-main-content">
@@ -245,6 +245,8 @@
                 , pageCount: 46
                 , minPage: 1
                 , num: 1
+                , teachingAssistantId: null
+                // , isShowTip: false
             };
         },
         computed:{
@@ -254,30 +256,41 @@
 
         },
         created(){
-            //取所有页码
-            let bool = localStorage.getItem("isExist");
-            if(bool)
-            {
-                let num = localStorage.getItem("num");
-                num = parseInt(num);
-                this.num = num;
-                this.minPage = num;
-                this.handleChangePage(num)
-            }
+
 
         },
         mounted(){
-            console.log(this.$refs.myPage);
-            if(this.$refs.myPage)
+            //取所有页码
+            this.teachingAssistantId = this.$route.params.teachingAssistantId;
+
+            console.log(this.teachingAssistantId);
+            let teachingAssistantInfo = localStorage.getItem("teachingAssistantInfo");
+            if(!teachingAssistantInfo)
+                return;
+
+            teachingAssistantInfo = JSON.parse(teachingAssistantInfo);
+            //localStorage.setItem("teachingAssistantInfo", JSON.stringify({teachingAssistantId: this.teachingAssistantId, num: this.num}));
+            let obj = teachingAssistantInfo.find((item)=>item.teachingAssistantId === this.teachingAssistantId);
+            if(obj)
             {
-                let imgs = this.$refs.myPage.querySelectorAll("p>img");
-                imgs.forEach((img)=>{
-                    this.currentPageImgs.push({
-                        src: img.src,
-                        width: img.width,
-                        height: img.height,
-                        selected: false
-                    });
+                this.num = obj.num;
+                this.minPage = obj.num;
+                this.handleChangePage(obj.num) ;
+
+                this.$nextTick(()=>{
+                    console.log(this.$refs.myPage);
+                    if(this.$refs.myPage)
+                    {
+                        let imgs = this.$refs.myPage.querySelectorAll("p>img");
+                        imgs.forEach((img)=>{
+                            this.currentPageImgs.push({
+                                src: img.src,
+                                width: img.width,
+                                height: img.height,
+                                selected: false
+                            });
+                        });
+                    }
                 });
             }
         },
@@ -462,22 +475,41 @@
                         });
                     */
 
-                    let options = {fileName: response.html};
+                    let options = {fileName: response.html, teachingAssistantId: this.teachingAssistantId};//"07ddf5690e40c07e3057bd4dafd68d5d"
                     // options.fileName = options.replace(/\\/g,'\\\\');
                     request.switchContent(options).then((res1)=>{
                         console.log("switchContent");
                         console.log(res1);
-                        request.getPageNumber({teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d"}).then(res2=>{
+                        request.getPageNumber({teachingAssistantId: this.teachingAssistantId}).then(res2=>{
                             console.log(res2);
                             this.minPage = res2.data[0].pageNum;
                             this.num = res2.data[0].pageNum;
                             //this.pageCount = res2.data.length;
+                            let teachingAssistantInfo = localStorage.getItem("teachingAssistantInfo");
+                            if(teachingAssistantInfo)
+                            {
+                                teachingAssistantInfo = JSON.parse(teachingAssistantInfo);
+                                let obj = teachingAssistantInfo.find((item)=>item.teachingAssistantId === this.teachingAssistantId);
+                                if(obj)
+                                {
+                                    obj.num = this.num;
+                                }
+                                else{
+                                    teachingAssistantInfo.push({teachingAssistantId: this.teachingAssistantId, num: this.num});
+                                }
 
-                            localStorage.setItem("isExist", true);
-                            localStorage.setItem("num", this.num);
+                                localStorage.setItem("teachingAssistantInfo", JSON.stringify(teachingAssistantInfo));
+                            }
+                            else{
+
+                                localStorage.setItem("teachingAssistantInfo", JSON.stringify([{teachingAssistantId: this.teachingAssistantId, num: this.num}]));
+                            }
+
+
+
                             //取第一页内容展示
                             let params = {
-                                teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d",
+                                teachingAssistantId: this.teachingAssistantId,//"07ddf5690e40c07e3057bd4dafd68d5d",
                                 pageNum: this.num
                             };
 
@@ -503,7 +535,7 @@
             handleChangePage(value) {
                 console.log(value);
                 let params = {
-                    teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d",
+                    teachingAssistantId: this.teachingAssistantId, // "07ddf5690e40c07e3057bd4dafd68d5d",
                     pageNum: value
                 };
                 request.getHTMLByPageNumber(params).then(res=>{

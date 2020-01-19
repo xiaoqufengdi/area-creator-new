@@ -1,6 +1,6 @@
 <template>
         <el-row class="hc-main-reader">
-        <el-col :xs="3" :md="4" :lg="5">blank </el-col>
+        <el-col :xs="3" :md="4" :lg="5"> </el-col>
         <el-col :xs="18" :md="16" :lg="14" class="hc-main-center">
             <el-row class="hc-main-reader-selected">
                 <el-col :span="20" class="first">
@@ -34,39 +34,38 @@
                     >
                         <el-table-column
                                 align="center"
-                                prop="teachingAssistant"
+                                prop="teachingAssistantName"
                                 label="教辅名称"
                                 width="180">
                         </el-table-column>
 
                         <el-table-column
                                 align="center"
-                                prop="company"
+                                prop="publishingHouse"
                                 label="出版社"
                                 width="180">
                         </el-table-column>
                         <el-table-column
                                 align="center"
-                                prop="learningSection"
+                                prop="grade"
                                 label="学段"
                                 width="180">
                         </el-table-column>
                         <el-table-column
                                 align="center"
-                                prop="subject"
+                                prop="subjectName"
                                 label="学科"
                                 width="180">
                         </el-table-column>
                         <el-table-column
                                 align="center"
-                                prop="date"
-                                sortable
-                                label="年度"
-                                width="100">
+                                prop="createTime"
+                                label="时间"
+                                width="180">
                         </el-table-column>
                         <el-table-column
                                 align="center"
-                                prop="state"
+                                prop="validFlag"
                                 label="状态"
                                 :formatter="formatter"
                                 width="100">
@@ -85,7 +84,7 @@
                 </el-col>
             </el-row>
         </el-col>
-        <el-col :xs="3" :md="4" :lg="5">blank</el-col>
+        <el-col :xs="3" :md="4" :lg="5"></el-col>
 
         <template>
             <el-dialog title="添加教辅"  custom-class="hc-main-add-dialog"  width="500px" :visible.sync="dialogFormVisible">
@@ -116,6 +115,8 @@
 </template>
 
 <script>
+    import request from "../../utils/request";
+
     export default {
         data () {
             return{
@@ -139,8 +140,10 @@
             }
         },
         created(){
-            let tableData = localStorage.getItem("tableData");
 
+            this.getData();
+
+/*            let tableData = localStorage.getItem("tableData");
             if(tableData)
             {
                 tableData = JSON.parse(tableData);
@@ -180,9 +183,8 @@
                     company: "江西教育出版社",
                     state: 3,
                 }];
-
                 localStorage.setItem("tableData", JSON.stringify(this.tableData));
-            }
+            }*/
         },
         methods:{
             handleClick(row) {
@@ -191,7 +193,7 @@
 
             handleClickEdit(row){
                 console.log(row);
-                this.$router.push({name: "TitleDisplay"});
+                this.$router.push({name: "TitleDisplay", params:{teachingAssistantId: row.teachingAssistantId}});
 
             },
             search(){
@@ -226,7 +228,14 @@
             dialogFormClick(){
                 this.dialogFormVisible = false;
 
+            },
+
+            async getData(){
+                let result = await request.getTeachingAssistantData();
+                this.tableData = result.data;
+                console.log(this.tableData);
             }
+
         }
     }
 </script>

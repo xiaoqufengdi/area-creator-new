@@ -111,7 +111,18 @@ request.getHTMLByPageNumber = (params)=>{
                 reject(err.data);
             })
         });
-    };
+ };
+
+
+request.getTeachingAssistantData = (params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/api/teachingAssistantInfo/list", { headers: { 'Content-Type': 'application/json'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
 
 /*
 //更新token
