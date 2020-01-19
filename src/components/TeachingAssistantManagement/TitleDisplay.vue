@@ -24,7 +24,7 @@
                  </el-col>
                 <el-col :span="14">
                     <el-input-number size="small" :max='maxPage' :min='minPage'  v-model.number="num"   @change="handleChangePage"></el-input-number> <span>共{{pageCount}}页</span>
-<!--                    <button @click="handleGetPage">请求页码 </button>-->
+                   <el-button size="small" type="success"  @click="handleGetPage">测试请求页码 </el-button>
                 </el-col>
             </el-row>
             <el-row class="hc-main-content">
@@ -36,7 +36,7 @@
                 <el-col :span="8" class="hc-main-content-html">
                     <h2>展示HTML页</h2>
                     <section id="myPage" ref="myPage">
-                        <article :style="{border: selectedQuestion.questionId === question.questionId ? '1.5px solid red' : '0.5px solid  #0CC689'}" :id="question.questionId" v-html="question.content" v-for="question in questions">
+                        <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '1.5px solid red' : '0.5px solid  #0CC689'}" :id="question.questionId" v-html="question.content" v-for="question in questions">
                             {{question.content }}
                         </article>
                         <!--        　　　　　　　　　　　　　　　　　　　　　　　　　　　　　</span></p>
@@ -448,7 +448,7 @@
                 formData.append(content.filename, content.file);
                 this.$message('正在上传，请稍后...');
 
-                request.upload("./docToHtml/test/",  formData).then((response)=>{
+                request.upload( formData).then((response)=>{
                     console.log(response);
                     this.$message('上传成功，正在转换成HTML...');
                     this.loading = false;
@@ -533,21 +533,19 @@
                 });
             },
 
-            // handleGetPage(){
-            //
-            //     let params = {
-            //         teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d",
-            //         pageNum: 47
-            //     };
-            //     request.getHTMLByPageNumber(params).then(res3=>{
-            //         console.log("第一页内容");
-            //         console.log(res3);
-            //
-            //
-            //     }).catch((err)=>{
-            //         console.log(err);
-            //     });
-            // }
+            handleGetPage(){
+
+                let params = {
+                    teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d",
+                    pageNum: 47
+                };
+                request.getHTMLByPageNumber(params).then(res3=>{
+                    console.log("第一页内容");
+                    console.log(res3);
+                }).catch((err)=>{
+                    console.log(err);
+                });
+            }
         },
         components: {}
     }

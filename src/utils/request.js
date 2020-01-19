@@ -68,9 +68,9 @@ const request = {
    // getHTMLByPageNumber: params=>post("/htmlToContent/query", JSON.stringify(params)),
 };
 
-request.upload = (url, params)=>{
+request.upload = (params)=>{
     return new Promise((resolve, reject)=>{
-        axios.post(url, params, { headers: { 'Content-Type': 'multipart/form-data' } }).then(res=>{
+        axios.post("/api/docToHtml/test/", params, { headers: { 'Content-Type': 'multipart/form-data' } }).then(res=>{
             resolve(res.data)
         }).catch(err=>{
             reject(err.data);
@@ -81,7 +81,7 @@ request.upload = (url, params)=>{
 
 request.switchContent = (params)=>{
     return new Promise((resolve, reject)=>{
-        axios.post("/htmlToContent/test", params, { headers: { 'Content-Type': 'application/json' } }).then(res=>{
+        axios.post("/api/htmlToContent/test", params, { headers: { 'Content-Type': 'application/json' } }).then(res=>{
             resolve(res.data)
         }).catch(err=>{
             reject(err.data);
@@ -92,7 +92,7 @@ request.switchContent = (params)=>{
 
 request.getHTMLByPageNumber = (params)=>{
     return new Promise((resolve, reject)=>{
-        axios.post("/htmlToContent/query", JSON.stringify(params), { headers: { 'Content-Type': 'application/json'} }).then(res=>{
+        axios.post("/api/htmlToContent/query", JSON.stringify(params), { headers: { 'Content-Type': 'application/json'} }).then(res=>{
             resolve(res.data)
         }).catch(err=>{
             reject(err.data);
@@ -105,7 +105,7 @@ request.getHTMLByPageNumber = (params)=>{
 
  request.getPageNumber = (params)=>{
         return new Promise((resolve, reject)=>{
-            axios.post("/htmlToContent/list", JSON.stringify(params), { headers: { 'Content-Type': 'application/json'} }).then(res=>{
+            axios.post("/api/htmlToContent/list", JSON.stringify(params), { headers: { 'Content-Type': 'application/json'} }).then(res=>{
                 resolve(res.data)
             }).catch(err=>{
                 reject(err.data);
