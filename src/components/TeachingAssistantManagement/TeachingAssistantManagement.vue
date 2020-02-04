@@ -143,7 +143,7 @@
 
             this.getData();
 
-/*            let tableData = localStorage.getItem("tableData");
+            let tableData = localStorage.getItem("tableData");
             if(tableData)
             {
                 tableData = JSON.parse(tableData);
@@ -151,40 +151,40 @@
 
             }else{
                 this.tableData = [{
-                    id: "1",
-                    teachingAssistant: "数学作业本",
-                    learningSection: "四年级下",
-                    date: '2016',
-                    subject: "语文",
-                    company: "江西教育出版社",
-                    state: 0,
+                    teachingAssistantId: "1",
+                    teachingAssistantName: "数学作业本",
+                    grade: "四年级下",
+                    createTime: '2016',
+                    subjectName: "语文",
+                    publishingHouse: "江西教育出版社",
+                    validFlag: 0,
                 }, {
-                    id: "2",
-                    teachingAssistant: "数学作业本",
-                    learningSection: "四年级下",
-                    date: '2018',
-                    subject: "语文",
-                    company: "江西教育出版社",
-                    state: 1,
+                    teachingAssistantId: "2",
+                    teachingAssistantName: "数学作业本",
+                    grade: "四年级下",
+                    createTime: '2018',
+                    subjectName: "语文",
+                    publishingHouse: "江西教育出版社",
+                    validFlag: 1,
                 }, {
-                    id: "3",
-                    teachingAssistant: "数学作业本",
-                    learningSection: "四年级下",
-                    date: '2026',
-                    subject: "语文",
-                    company: "江西教育出版社",
-                    state: 2,
+                    teachingAssistantId: "3",
+                    teachingAssistantName: "数学作业本",
+                    grade: "四年级下",
+                    createTime: '2026',
+                    subjectName: "语文",
+                    publishingHouse: "江西教育出版社",
+                    validFlag: 2,
                 }, {
-                    id: "4",
-                    teachingAssistant: "数学作业本",
-                    learningSection: "四年级下",
-                    date: '2015',
-                    subject: "语文",
-                    company: "江西教育出版社",
-                    state: 3,
+                    teachingAssistantId: "4",
+                    teachingAssistantName: "数学作业本",
+                    grade: "四年级下",
+                    createTime: '2015',
+                    subjectName: "语文",
+                    publishingHouse: "江西教育出版社",
+                    validFlag: 3,
                 }];
                 localStorage.setItem("tableData", JSON.stringify(this.tableData));
-            }*/
+            }
         },
         methods:{
             handleClick(row) {

@@ -1,9 +1,9 @@
-# focus-reader
+# area-creator-new
 
-> 集中批阅
+> 题库组题圈码
 
 ##项目简介
-三有果拆分题系统
+三有果组题圈码系统
 ##技术栈
 vue+router+vuex+webpack
 
