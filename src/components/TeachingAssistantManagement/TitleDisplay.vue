@@ -1,71 +1,56 @@
 <template>
     <el-row class="hc-main-reader" v-loading="loading">
-        <el-col :xs="1" :md="1" :lg="2">
-            <el-button type="success" @click="goBack">返回</el-button>
+        <el-col :xs="2" :md="3" :lg="4">
+            <el-button type="primary" size="small" @click="goBack">返回</el-button>
         </el-col>
-        <el-col :xs="22" :md="22" :lg="20" class="hc-main-center">
+        <el-col :xs="20" :md="18" :lg="16" class="hc-main-center">
             <el-row class="hc-main-header">
-                <el-col :span="10">提示： <span style="color:red;">检测到word原稿不存在，请重新上传</span>
-                    <el-upload
-                            class="hc-main-header-upload"
-                            ref="upload"
-                            action="fakeaction"
-                            :http-request="handSend"
-                            :on-success="handleSuccess"
-                            :before-upload="beforeUpload"
-                            :file-list="fileList"
-                            :show-file-list="false"
-                            :auto-upload="true">
-                        <el-button slot="trigger" size="small" type="success">选取文件</el-button>
-                        <!--         "https://jsonplaceholder.typicode.com/posts/"                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
-                    </el-upload>
-<!--                    <el-tag size="small"  effect="dark" type="success"> 上传 </el-tag>-->
-                    <!--               数学必修1.doc             :on-preview="handlePreview"-->
+                <el-col :span="10">
+                  <el-button size="small" type="primary"  @click="handleStartDraw">开始圈码</el-button>
+                  <el-button size="small" type="primary"  @click="getSelectedQuestion">获取</el-button>
+
+
+                  <!--       提示： <span style="color:red;">检测到word原稿不存在，请重新上传</span>
+                           <el-upload
+                                   class="hc-main-header-upload"
+                                   ref="upload"
+                                   action="fakeaction"
+                                   :http-request="handSend"
+                                   :on-success="handleSuccess"
+                                   :before-upload="beforeUpload"
+                                   :file-list="fileList"
+                                   :show-file-list="false"
+                                   :auto-upload="true">
+                               <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                               &lt;!&ndash;         "https://jsonplaceholder.typicode.com/posts/"                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>&ndash;&gt;
+                           </el-upload>-->
                  </el-col>
-                <el-col :span="14">
+                <el-col :span="10">
                     <el-input-number size="small" :max='maxPage' :min='minPage'  v-model.number="num"   @change="handleChangePage"></el-input-number> <span>共{{pageCount}}页</span>
 <!--                   <el-button size="small" type="success"  @click="handleGetPage">测试请求页码 </el-button>-->
                 </el-col>
+                <el-col :span="4">
+                  <el-checkbox fill="#0CC689" text-color="#0CC689" v-model="checked">是否双栏</el-checkbox>
+                </el-col>
             </el-row>
             <el-row class="hc-main-content">
-                <el-col class="hc-main-content-pic"  :span="8"  >
+<!--                <el-col class="hc-main-content-pic"  :span="8"  >
                     <h2>原始教辅</h2>
                     <img :src="picSrc" alt="picture" >
 
-                </el-col>
-                <el-col :span="8" class="hc-main-content-html">
-                    <h2>展示HTML页</h2>
-                    <section id="myPage" ref="myPage">
-                        <article   :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '1.5px solid red' : '0.5px solid  #0CC689'}" :id="question.questionId" v-html="question.content" v-for="question in questions">
+                </el-col>-->
+
+                <el-col :span="24" class="hc-main-content-html">
+<!--                    <h2>展示HTML页</h2>-->
+                    <section id="myPage"     ref="myPage"  :style="{height: height + 'px', width: width + 'px'}">
+                        <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="question in questions">
                             {{question.content }}
                         </article>
-                        <!--        　　　　　　　　　　　　　　　　　　　　　　　　　　　　　</span></p>
-                                <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span
-                                        style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span
-                                        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span
-                                        style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span
-                                        style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span
-                                        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span
-                                        style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span
-                                        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>
 
-                                <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span
-                                        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span
-                                        style="font-family:方正书宋_GBK; font-style:italic">　</span><span
-                                        style="width:2.75pt; display:inline-block">&#xa0;</span><span
-                                        style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span
-                                        style="font-family:NEU-BZ"> 15</span><span style="font-family:方正书宋_GBK; font-style:italic">　</span><span
-                                        style="width:3.34pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">C</span><span
-                                        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 13</span><span
-                                        style="font-family:方正书宋_GBK; font-style:italic">　</span><span
-                                        style="width:3.34pt; display:inline-block">&#xa0;</span><span
-                                        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span
-                                        style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span
-                                        style="font-family:NEU-BZ">17</span></p>-->
 
                     </section>
                 </el-col>
-                <el-col :span="8" class="hc-main-content-edit">
+                <!--<el-col :span="8" class="hc-main-content-edit">
                     <h2 style="border-bottom: 1px solid #0CC689;">题目校对</h2>
                     <div  style="height:85%;overflow:auto;padding: 5px;">
                         <h5 style="text-align:left;margin:10px 5px 5px;"> <el-tag type="success">内容部分：</el-tag></h5>
@@ -82,7 +67,7 @@
                                 </el-input>
                             </template>
                         </div>
-                        <!--没有数据时占个位置-->
+                        &lt;!&ndash;没有数据时占个位置&ndash;&gt;
                         <div v-show="Boolean(!selectedQuestion.content.length)">
                             <el-input
                                     :key="1"
@@ -95,7 +80,7 @@
                         </div>
 
                         <h5 style="text-align:left;margin:10px 5px;"> <el-tag type="success">图片部分：</el-tag>
-<!--                            <a href="https://question-test.oss-cn-beijing.aliyuncs.com/数学/数学.html" target="_blank">jump</a>-->
+&lt;!&ndash;                            <a href="https://question-test.oss-cn-beijing.aliyuncs.com/数学/数学.html" target="_blank">jump</a>&ndash;&gt;
                         </h5>
                         <div style="border:1px solid #0CC689">
                             <el-card style="width:49%; float:left"
@@ -119,11 +104,10 @@
 
                     <el-button type="success" style="margin: 10px 10px;" @click="getSelectedQuestion">获取</el-button>
                     <el-button type="success" style="margin: 10px 10px;" @click="handleSave">保存</el-button>
-                </el-col>
-
+                </el-col>-->
             </el-row>
         </el-col>
-        <el-col :xs="1" :md="1" :lg="2"></el-col>
+        <el-col :xs="2" :md="3" :lg="4"></el-col>
     </el-row>
 </template>
 <script>
@@ -183,7 +167,60 @@
                                 '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                                 '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                                 '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                                ,{questionId: "3" , title:"第3道题",pageNum: 1, content: ['<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span',
+
+                    ,{questionId: "3" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
+                            '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
+                            '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
+                            '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
+                            '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
+                            '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
+                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
+                            '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
+                            '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
+                            '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
+                            '                                style="width:2.75pt; display:inline-block">&#xa0;</span><span'+
+                            '                                style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
+                            '                                style="font-family:NEU-BZ"> 15</span><span style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
+                            '                                style="width:3.34pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">C</span><span'+
+                            '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 13</span><span'+
+                            '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
+                            '                                style="width:3.34pt; display:inline-block">&#xa0;</span><span'+
+                            '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
+                            '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
+                            '                                style="font-family:NEU-BZ">17</span></p>'}
+                    ,{questionId: "4" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
+                            '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
+                            '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
+                            '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
+                            '        style="font-family:方正书宋_GBK">中</span><span style="font-family:方正书宋_GBK">,</span><span'+
+                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">=</span><span'+
+                            '        style="font-family:NEU-BZ; font-style:italic">AC</span><span style="font-family:方正书宋_GBK">,</span><span'+
+                            '        style="font-family:方正书宋_GBK">其周长为</span><span style="font-family:NEU-BZ">20 cm</span><span'+
+                            '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
+                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
+                            '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
+                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
+                            '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
+                            '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
+                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
+                            '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
+                            '        style="width:21.23pt; display:inline-block">&#xa0;</span><span'+
+                            '        style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
+                            '        style="font-family:NEU-BZ"> 5 cm&lt;</span><span'+
+                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'+
+                            '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">C</span><span'+
+                            '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
+                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;8 cm</span><span'+
+                            '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
+                            '        style="width:21.82pt; display:inline-block">&#xa0;</span><span'+
+                            '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
+                            '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
+                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
+
+
+                    ,{questionId: "5" , title:"第3道题",pageNum: 1, content: ['<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span',
                                     '        style="font-family:NEU-BZ">3</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span',
                                     '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">如图</span><span',
                                     '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">已知</span><span',
@@ -215,8 +252,8 @@
                                     '        style="font-family:NEU-BZ">C</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span',
                                     '        style="font-family:NEU-BZ"> 5</span><span style="font-family:方正书宋_GBK; font-style:italic">　</span><span',
                                     '        style="width:8.59pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">D</span><span',
-                                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 6</span></p>',
-                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.002.png" width="171"   height="152" alt=""     style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
+                                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 6</span></p>'
+                                /*    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.002.png" width="171"   height="152" alt=""     style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span  style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span style="font-family:NEU-HZ">3</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.003.png" width="106"    height="178" alt=""   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
@@ -229,7 +266,7 @@
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span  style="font-family:NEU-HZ">6</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:ignore">&#xa0;</span>',
-                                    '</p>'].join("")}
+                                    '</p>'*/].join("")}
                 ]
                 ,picSrc: null,//"./static/math_47.png",
                 selectedQuestion: {questionId:null, content: [/*{type: "SPAN", str: "" }, {type: "IMG", src: "", width}*/] }
@@ -243,7 +280,25 @@
                 , num: 1
                 , teachingAssistantId: null
                 // , isShowTip: false
+                , checked: false
+                , width: 571
+                , height: 864
             };
+        },
+        watch:{
+            checked: function (val) {
+                console.log("checked:" + val);
+                if(val){
+                    //双栏
+
+
+                }else{
+                    //通栏
+
+                }
+
+            }
+            
         },
         computed:{
             maxPage() {
@@ -303,6 +358,8 @@
                 let articleDOM = this.getSelectedContents();
                 if (articleDOM) {
                     console.log(articleDOM);
+                    console.log(articleDOM.offsetTop, articleDOM.offsetLeft);
+
                     let arrP = Array.from(articleDOM.children);
                     this.selectedQuestion.questionId = articleDOM.id;
                     this.selectedQuestion.content = [];
@@ -367,28 +424,42 @@
                 else
                     return null;
                 //window.getSelection().toString();
-
-                /**
-                 * @method findArticleDOM
-                 * 找到目标tag的dom
-                 * @param currentDOM
-                 * @param tagName
-                 */
-                let findTagNameDOM = function(currentDOM, tagName, stopDOM) {
-                    if (currentDOM.tagName === tagName) {
-                        return currentDOM;
-                    }
-                    else if(currentDOM === stopDOM){
-                        return null;
-                    }
-                    else{
-                        return findTagNameDOM(currentDOM.parentNode,tagName , stopDOM);
-                    }
-                };
-
                 let stopDOM = document.querySelector("#myPage");
-                let articleDOM = findTagNameDOM(range.commonAncestorContainer, "ARTICLE", stopDOM);
+                let articleDOM = this.findTagNameDOM(range.commonAncestorContainer, "ARTICLE", stopDOM);
                 return articleDOM;
+            },
+
+            //开始圈码
+            handleStartDraw(event){
+                let myPage = document.querySelector("#myPage");
+                let questionAnswerArea = {"exBoxes": [], "exAnswerBoxes": []};
+                //let questionAnswerArea = {"exBoxes":[{width: 20, height: 10, x: 0, y: 20}], "exAnswerBoxes": [{width: 5, height: 5, x: 5, y: 20}]}
+                console.log(myPage.childNodes);
+                myPage.childNodes.forEach((article,index)=>{
+                    questionAnswerArea.exBoxes.push({width: article.clientWidth + 1, height: article.clientHeight + 1, x: article.offsetLeft, y: article.offsetTop})
+                    let question = this.questions.find((question)=>question.questionId === article.id);
+                    question.questionAnswerArea = JSON.parse(JSON.stringify(questionAnswerArea));
+                    questionAnswerArea = {"exBoxes": [], "exAnswerBoxes": []};
+                });
+
+                console.log(this.questions);
+            },
+            /**
+             * @method findArticleDOM
+             * 找到目标tag的dom
+             * @param currentDOM
+             * @param tagName
+             */
+            findTagNameDOM (currentDOM, tagName, stopDOM) {
+                if (currentDOM.tagName === tagName) {
+                    return currentDOM;
+                }
+                else if(currentDOM === stopDOM){
+                    return null;
+                }
+                else{
+                    return this.findTagNameDOM(currentDOM.parentNode,tagName , stopDOM);
+                }
             },
             //输入框事件响应
             handleInput(value, obj){
@@ -578,6 +649,8 @@
         components: {}
     }
 
+
+
 </script>
 <style scoped lang="less">
     @import "../../style/theme.less";
@@ -625,7 +698,13 @@
                     padding: 5px;
                     #myPage{
                         text-align: left;
-
+                   /*     width: 571px;
+                        height: 864px;*/
+                        margin: 0 auto;
+                        border: 1.5px solid black;
+                        position: relative;
+                        box-sizing: border-box;
+                        padding: 20px 10px;
                     }
                 }
             }

@@ -15,10 +15,10 @@
                               v-model="teachingAssistant">
                         <!--<el-button slot="append" class="myButton" type="primary">搜索</el-button>-->
                     </el-input>
-                    <el-button class="hc-main-selected-search" size="medium" type="success" @click="search()">搜索</el-button>
+                    <el-button class="hc-main-selected-search" size="small" type="primary" @click="search()">搜索</el-button>
                 </el-col>
                 <el-col :span="4" class="second">
-                    <el-button size="medium" type="success" @click="add()">添加</el-button>
+                    <el-button size="small" type="primary" @click="add()">添加</el-button>
 
 
                 </el-col>
