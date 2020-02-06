@@ -4,7 +4,22 @@
         <el-col :xs="18" :md="16" :lg="14" class="hc-main-center">
             <el-row class="hc-main-reader-selected">
                 <el-col :span="20" class="first">
-                    <el-date-picker size="medium"
+                    <!--      :http-request="handSend"
+
+-->
+                     <el-upload
+                             class="hc-main-header-upload"
+                             ref="upload"
+                             action="http://localhost:8080"
+                             :on-success="handleSuccess"
+                             :before-upload="beforeUpload"
+                             :show-file-list="false"
+                             :auto-upload="true">
+                         <el-button slot="trigger" size="small" type="primary">上传文件</el-button>
+                         <!--         "https://jsonplaceholder.typicode.com/posts/"                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+                     </el-upload>
+                    <span>支持扩展名：.doc .docx</span>
+                   <!-- <el-date-picker size="medium"
                             v-model="year"
                             type="year"
                             placeholder="选择年">
@@ -13,14 +28,12 @@
                               placeholder="请输入教辅名"
                               prefix-icon="el-icon-search"
                               v-model="teachingAssistant">
-                        <!--<el-button slot="append" class="myButton" type="primary">搜索</el-button>-->
+                        &lt;!&ndash;<el-button slot="append" class="myButton" type="primary">搜索</el-button>&ndash;&gt;
                     </el-input>
-                    <el-button class="hc-main-selected-search" size="small" type="primary" @click="search()">搜索</el-button>
+                    <el-button class="hc-main-selected-search" size="small" type="primary" @click="search()">搜索</el-button>-->
                 </el-col>
                 <el-col :span="4" class="second">
-                    <el-button size="small" type="primary" @click="add()">添加</el-button>
-
-
+                    <el-button size="small" type="primary" @click="add()">导入审题库</el-button>
                 </el-col>
 
             </el-row>
@@ -35,7 +48,7 @@
                         <el-table-column
                                 align="center"
                                 prop="teachingAssistantName"
-                                label="教辅名称"
+                                label="文档名称"
                                 width="180">
                         </el-table-column>
 
@@ -59,16 +72,29 @@
                         </el-table-column>
                         <el-table-column
                                 align="center"
+                                prop="total"
+                                label="总题量/未审题量/错题"
+                                width="180">
+                        </el-table-column>
+
+                        <el-table-column
+                                align="center"
                                 prop="createTime"
                                 label="时间"
                                 width="180">
                         </el-table-column>
                         <el-table-column
                                 align="center"
+                                fixed="right"
                                 prop="validFlag"
                                 label="状态"
                                 :formatter="formatter"
                                 width="100">
+                            <template slot-scope="scope">
+                                <span style="color: blue;"> {{ scope.row.validFlag ? '已审核' : '审核中' }}</span>
+                            </template>
+
+
                         </el-table-column>
                         <el-table-column
                                 align="center"
@@ -77,7 +103,7 @@
                                 width="100">
                             <template slot-scope="scope">
                                 <!--<el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>-->
-                                <el-button @click="handleClickEdit(scope.row)" type="text" size="small">编辑</el-button>
+                                <el-button @click="handleClickEdit(scope.row)" type="text" size="medium">查看</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -86,6 +112,7 @@
         </el-col>
         <el-col :xs="3" :md="4" :lg="5"></el-col>
 
+        <!--添加-->
         <template>
             <el-dialog title="添加教辅"  custom-class="hc-main-add-dialog"  width="500px" :visible.sync="dialogFormVisible">
                 <el-form class="hc-main-add-form" :model="form">
@@ -154,6 +181,7 @@
                     teachingAssistantId: "1",
                     teachingAssistantName: "数学作业本",
                     grade: "四年级下",
+                    total: 2000,
                     createTime: '2016',
                     subjectName: "语文",
                     publishingHouse: "江西教育出版社",
@@ -162,26 +190,29 @@
                     teachingAssistantId: "2",
                     teachingAssistantName: "数学作业本",
                     grade: "四年级下",
+                    total: 2000,
                     createTime: '2018',
                     subjectName: "语文",
                     publishingHouse: "江西教育出版社",
-                    validFlag: 1,
+                    validFlag: 0,
                 }, {
                     teachingAssistantId: "3",
                     teachingAssistantName: "数学作业本",
                     grade: "四年级下",
+                    total: 2000,
                     createTime: '2026',
                     subjectName: "语文",
                     publishingHouse: "江西教育出版社",
-                    validFlag: 2,
+                    validFlag: 1,
                 }, {
                     teachingAssistantId: "4",
                     teachingAssistantName: "数学作业本",
                     grade: "四年级下",
+                    total: 2000,
                     createTime: '2015',
                     subjectName: "语文",
                     publishingHouse: "江西教育出版社",
-                    validFlag: 3,
+                    validFlag: 1,
                 }];
                 localStorage.setItem("tableData", JSON.stringify(this.tableData));
             }
@@ -203,22 +234,31 @@
             },
             formatter(row,column){
                 let value = null;
-                switch(row.state)
+                switch(row.validFlag)
                 {
                     case 0:
-                        value = "目录";
+                        value = "审核中";
                         break;
                     case 1:
-                        value = "圈码、拆题";
-                        break;
-                    case 2:
-                        value = "圈码";
-                        break;
-                    case 3:
-                        value = "拆题";
+                        value = "已审核";
                         break;
                 }
                 return value;
+            },
+
+            beforeUpload(file){
+
+                return true;
+            },
+            handleSuccess(response, file, fileList){
+
+                console.log('success');
+                console.log(response);
+
+            },
+            handSend(content){
+
+
             },
             add(){
                 this.dialogFormVisible = true;
@@ -258,6 +298,9 @@
             .first{
                 text-align: left;
                 white-space:nowrap;
+                .hc-main-header-upload{
+                    /*display:inline-block;*/
+                }
                 .el-select{
                     width: 130px;
                 }

@@ -7,7 +7,6 @@
             <el-row class="hc-main-header">
                 <el-col :span="10">
                   <el-button size="small" type="primary"  @click="handleStartDraw">获取坐标</el-button>
-<!--                  <el-button size="small" type="primary"  @click="getSelectedQuestion">获取</el-button>-->
 
 
                   <!--       提示： <span style="color:red;">检测到word原稿不存在，请重新上传</span>
@@ -44,12 +43,12 @@
 <!--                    <h2>展示HTML页</h2>-->
                     <div id="myPage"     ref="myPage"  :style="{height: height + 'px', width: width + 'px'}">
                         <section :style="{width: checked ?'50%' : '100%' }">
-                            <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(0, 10)">
+                            <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(0, 9)">
                                 {{question.content }}
                             </article>
                         </section>
                         <section v-if="checked" :style="{width:'50%' }">
-                            <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(10)">
+                            <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(9)">
                                 {{question.content }}
                             </article>
                         </section>
@@ -129,7 +128,7 @@
                                 '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
                                 '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
                                 '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                                '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                                '                                style="font-family:方正书宋_GBK; font-style:italic" class="answer_area">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
                                 '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                                 '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
                                 '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
@@ -155,7 +154,7 @@
                                 '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
                                 '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
                                 '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                                '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                                '        style="font-family:方正书宋_GBK; font-style:italic"  class="answer_area">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
                                 '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                                 '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
                                 '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
@@ -172,27 +171,7 @@
                                 '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                                 '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                                 '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                    ,{questionId: "3" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
-                            '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
-                            '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
-                            '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
-                            '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
-                            '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
-                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
-                            '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
-                            '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '                                style="width:2.75pt; display:inline-block">&#xa0;</span><span'+
-                            '                                style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '                                style="font-family:NEU-BZ"> 15</span><span style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '                                style="width:3.34pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">C</span><span'+
-                            '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 13</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '                                style="width:3.34pt; display:inline-block">&#xa0;</span><span'+
-                            '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
-                            '                                style="font-family:NEU-BZ">17</span></p>'}
+                    ,{questionId: "3" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt">在△ABC中，角A，B，C的对边分别为<i>a</i>，<i>b</i>，<i>c</i>，若< img align="absmiddle" src="tikupicpath/10000001/mtnr/10000001mtnr30001.png" />＜0，则△ABC（<span class="answer_area">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>）. <br/>  <br/>A.一定是锐角三角形&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;B.一定是直角三角形<br/>  <br/>C.一定是钝角三角形&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D.是锐角或直角三角形</p>'}
                     ,{questionId: "4" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
                             '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
@@ -664,7 +643,7 @@
         },
         mounted(){
             //取所有页码
-            this.teachingAssistantId = this.$route.params.teachingAssistantId;
+            this.teachingAssistantId = this.$route.params.teachingAssistantId || "1";
 
             console.log(this.teachingAssistantId);
             let teachingAssistantInfo = localStorage.getItem("teachingAssistantInfo");
@@ -790,6 +769,13 @@
                 console.log(articles);
                 articles.forEach((article,index)=>{
                     questionAnswerArea.exBoxes.push({width: article.clientWidth + 1, height: article.clientHeight + 1, x: article.offsetLeft, y: article.offsetTop})
+
+                    let answer = article.querySelector(".answer_area");
+                    if(answer){
+                        questionAnswerArea.exAnswerBoxes.push({width: answer.clientWidth + 1, height: answer.clientHeight + 1, x: answer.offsetLeft, y: answer.offsetTop});
+                        console.log(questionAnswerArea);
+                    }
+
                     let question = this.questions.find((question)=>question.questionId === article.id);
                     question.questionAnswerArea = JSON.parse(JSON.stringify(questionAnswerArea));
                     questionAnswerArea = {"exBoxes": [], "exAnswerBoxes": []};
@@ -1005,6 +991,12 @@
 
 
 </script>
+<style scoped>
+    article>>> span.answer_area{
+            display: inline-block;
+            border: 0.5px solid red;
+    }
+</style>
 <style scoped lang="less">
     @import "../../style/theme.less";
     .hc-main-reader{
@@ -1060,6 +1052,7 @@
                         padding: 20px 10px;
                         display: flex;
                         flex-direction: row;
+
                     }
                 }
             }
