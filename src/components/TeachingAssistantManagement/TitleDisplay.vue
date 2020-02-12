@@ -7,6 +7,8 @@
             <el-row class="hc-main-header">
                 <el-col :span="10">
                   <el-button size="small" type="primary"  @click="handleStartDraw">获取坐标</el-button>
+                    <el-button size="small" type="primary"  @click="handleSwitchPic">生成图片</el-button>
+                    <el-button size="small" type="primary"  @click="handleSwitchPDF">生成PDF</el-button>
 
 
                   <!--       提示： <span style="color:red;">检测到word原稿不存在，请重新上传</span>
@@ -43,12 +45,13 @@
 <!--                    <h2>展示HTML页</h2>-->
                     <div id="myPage"     ref="myPage"  :style="{height: height + 'px', width: width + 'px'}">
                         <section :style="{width: checked ?'50%' : '100%' }">
-                            <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(0, 9)">
+                            <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(0, 4)">
                                 {{question.content }}
                             </article>
                         </section>
+                        <section v-if="checked" style="width:1.5px;background:black;margin:0 5px;"> </section>
                         <section v-if="checked" :style="{width:'50%' }">
-                            <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(9)">
+                            <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(4, 9)">
                                 {{question.content }}
                             </article>
                         </section>
@@ -117,6 +120,10 @@
 <script>
     import axios from "axios";
     import request from "../../utils/request";
+    import html2canvas from "html2canvas";
+    import jsPDF from "jspdf";
+
+
     export default {
         data() {
             return {
@@ -127,8 +134,7 @@
                                 '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
                                 '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
                                 '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
-                                '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                                '                                style="font-family:方正书宋_GBK; font-style:italic" class="answer_area">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                                '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                                 '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                                 '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
                                 '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
@@ -153,8 +159,8 @@
                                 '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
                                 '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
                                 '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
-                                '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                                '        style="font-family:方正书宋_GBK; font-style:italic"  class="answer_area">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                                '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK"  class="answer_area">('+
+                                '        　&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span></p>'+
                                 '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                                 '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
                                 '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
@@ -171,7 +177,8 @@
                                 '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                                 '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                                 '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                    ,{questionId: "3" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt">在△ABC中，角A，B，C的对边分别为<i>a</i>，<i>b</i>，<i>c</i>，若< img align="absmiddle" src="tikupicpath/10000001/mtnr/10000001mtnr30001.png" />＜0，则△ABC（<span class="answer_area">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>）. <br/>  <br/>A.一定是锐角三角形&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;B.一定是直角三角形<br/>  <br/>C.一定是钝角三角形&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D.是锐角或直角三角形</p>'}
+                    ,{questionId: "3" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt">在△ABC中，角A，B，C的对边分别为<i>a</i>，<i>b</i>，<i>c</i>，若＜0，则△ABC <span class="answer_area">（&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ）</span>. <br/>  <br/>A.一定是锐角三角形&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;B.一定是直角三角形<br/>  <br/>C.一定是钝角三角形&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D.是锐角或直角三角形</p>'}
+/*
                     ,{questionId: "4" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
                             '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
@@ -201,6 +208,7 @@
                             '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
+*/
                     ,{questionId: "5" , title:"第3道题",pageNum: 1, content: ['<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span',
                                     '        style="font-family:NEU-BZ">3</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span',
                                     '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">如图</span><span',
@@ -221,8 +229,7 @@
                                     '        style="font-family:NEU-BZ; font-style:italic">MN</span><span style="font-family:NEU-BZ">=2</span><span',
                                     '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span',
                                     '        style="font-family:NEU-BZ; font-style:italic">OM</span><span style="font-family:NEU-BZ">=</span><span',
-                                    '        style="width:1.47pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span',
-                                    '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>',
+                                    '        style="width:1.47pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span',
                                     '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 3</span><span',
                                     '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span',
@@ -233,29 +240,28 @@
                                     '        style="font-family:NEU-BZ">C</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span',
                                     '        style="font-family:NEU-BZ"> 5</span><span style="font-family:方正书宋_GBK; font-style:italic">　</span><span',
                                     '        style="width:8.59pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">D</span><span',
-                                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 6</span></p>'
-                                /*    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.002.png" width="171"   height="152" alt=""     style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
+                                    '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 6</span></p>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.002.png" width="171"   height="152" alt=""     style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span  style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span style="font-family:NEU-HZ">3</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
-                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.003.png" width="106"    height="178" alt=""   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img  crossOrigin="anonymous" src="http://127.0.0.1:8081/test.jpg" width="106"    height="178" alt=""   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span style="font-family:NEU-HZ">4</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
-                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.004.png" width="152"                           height="133" alt=""                   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
+                             /*       '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.004.png" width="152"                           height="133" alt=""                   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span  style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span  style="font-family:NEU-HZ">5</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.005.png" width="201"                        height="137" alt=""      style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span  style="font-family:NEU-HZ">6</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:ignore">&#xa0;</span>',
-                                    '</p>'*/].join("")}
+                                    '</p>*/].join("")}
                     ,{questionId: "6" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
                             '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
                             '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
                             '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
-                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                             '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
                             '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
@@ -280,8 +286,7 @@
                             '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
                             '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
-                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                             '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
@@ -304,8 +309,7 @@
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
                             '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
                             '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
-                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                             '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
                             '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
@@ -330,8 +334,7 @@
                             '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
                             '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
-                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                             '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
@@ -354,8 +357,7 @@
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
                             '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
                             '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
-                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                             '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
                             '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
@@ -380,8 +382,7 @@
                             '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
                             '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
-                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                             '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
@@ -404,8 +405,7 @@
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
                             '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
                             '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
-                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                             '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
                             '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
@@ -430,8 +430,7 @@
                             '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
                             '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
-                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                             '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
@@ -454,8 +453,7 @@
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
                             '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
                             '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
-                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                             '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
                             '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
@@ -504,8 +502,7 @@
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
                             '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
                             '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
-                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
+                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK" class="answer_area">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 　)</span></p>'+
                             '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
                             '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
@@ -519,85 +516,6 @@
                             '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
                             '                                style="font-family:NEU-BZ">17</span></p>'}
-                    ,{questionId: "17" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
-                            '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
-                            '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
-                            '        style="font-family:方正书宋_GBK">中</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">=</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AC</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                            '        style="font-family:方正书宋_GBK">其周长为</span><span style="font-family:NEU-BZ">20 cm</span><span'+
-                            '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
-                            '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
-                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
-                            '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '        style="width:21.23pt; display:inline-block">&#xa0;</span><span'+
-                            '        style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '        style="font-family:NEU-BZ"> 5 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'+
-                            '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">C</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;8 cm</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '        style="width:21.82pt; display:inline-block">&#xa0;</span><span'+
-                            '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                    ,{questionId: "18" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
-                            '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
-                            '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
-                            '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
-                            '                                style="font-family:方正书宋_GBK">和</span><span style="font-family:NEU-BZ">7</span><span'+
-                            '                                style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则它的周长为</span><span'+
-                            '                                style="width:5.29pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
-                            '                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
-                            '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 17</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '                                style="width:2.75pt; display:inline-block">&#xa0;</span><span'+
-                            '                                style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '                                style="font-family:NEU-BZ"> 15</span><span style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '                                style="width:3.34pt; display:inline-block">&#xa0;</span><span style="font-family:NEU-BZ">C</span><span'+
-                            '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 13</span><span'+
-                            '                                style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '                                style="width:3.34pt; display:inline-block">&#xa0;</span><span'+
-                            '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
-                            '                                style="font-family:NEU-BZ">17</span></p>'}
-                    ,{questionId: "19" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
-                            '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
-                            '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
-                            '        style="font-family:方正书宋_GBK">中</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">=</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AC</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                            '        style="font-family:方正书宋_GBK">其周长为</span><span style="font-family:NEU-BZ">20 cm</span><span'+
-                            '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
-                            '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
-                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
-                            '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '        style="width:21.23pt; display:inline-block">&#xa0;</span><span'+
-                            '        style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '        style="font-family:NEU-BZ"> 5 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'+
-                            '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">C</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;8 cm</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '        style="width:21.82pt; display:inline-block">&#xa0;</span><span'+
-                            '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
                 ]
                 ,picSrc: null,//"./static/math_47.png",
                 selectedQuestion: {questionId:null, content: [/*{type: "SPAN", str: "" }, {type: "IMG", src: "", width}*/] }
@@ -638,6 +556,11 @@
 
         },
         created(){
+            //获取屏幕分辨率
+            //A4纸的大小 210mm*297mm
+            // 1 inch = 25.4mm
+            //window.screen.width
+
 
 
         },
@@ -764,7 +687,6 @@
             handleStartDraw(event){
                 let myPage = document.querySelector("#myPage");
                 let questionAnswerArea = {"exBoxes": [], "exAnswerBoxes": []};
-                //let questionAnswerArea = {"exBoxes":[{width: 20, height: 10, x: 0, y: 20}], "exAnswerBoxes": [{width: 5, height: 5, x: 5, y: 20}]}
                 let articles = myPage.querySelectorAll("article");
                 console.log(articles);
                 articles.forEach((article,index)=>{
@@ -800,6 +722,76 @@
                     return this.findTagNameDOM(currentDOM.parentNode,tagName , stopDOM);
                 }
             },
+            //html转成图片
+            handleSwitchPic(event){
+                let self = this;
+                let canvas = document.createElement("canvas");
+                let context = canvas.getContext("2d");
+                let scale = 2;//this.getPixelRatio(context);
+                console.log(scale);
+                canvas.width = this.width*scale;
+                canvas.height = this.height*scale;
+                context.scale(scale, scale);
+
+                html2canvas(this.$refs.myPage, {
+                    /*allowTaint: true, */  useCORS: true
+                    , width: this.width + 2
+                    , height: this.height
+                    // , canvas: canvas
+                    //, scale: 1
+                }).then(function (canvas) {
+                    console.log(canvas);
+ /*                   canvas.style.width = self.width + "px";
+                    canvas.style.height = self.height + "px";*/
+                    /*canvas.width = self.width;
+                    canvas.height = self.height;*/
+                    let test= document.querySelector(".test");
+                    test.appendChild(canvas);
+                    const Img = new Image();
+                    Img.src = canvas.toDataURL('image/png', 1.0);
+                    const alink = document.createElement("a");
+                    alink.href = Img.src;
+                    alink.download = "testImg.jpg";
+                    alink.click();
+                });
+            },
+
+            //html 转成 pdf
+            handleSwitchPDF(event){
+                let self = this;
+                html2canvas(this.$refs.myPage, {/*allowTaint: true,  scale: 1,*/  useCORS: true, width: this.width + 2 , height: this.height }).then(function (canvas) {
+                    console.log(canvas);
+                    let test= document.querySelector(".test");
+                    test.appendChild(canvas);
+
+                    //返回图片dataURL，参数：图片格式和清晰度(0-1)
+                    var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+                    //方向默认竖直，尺寸ponits，格式a4[595.28,841.89]
+                    var pdf = new jsPDF('', 'pt', 'a4');
+
+                    //addImage后两个参数控制添加图片的尺寸，此处将页面高度按照a4纸宽高比列进行压缩
+                    //分辨率为72px/inch 时  A4纸张大小595px*842px
+
+                    pdf.addImage(pageData, 'JPEG', 0, 0, 595, 842);
+
+                    pdf.save('stone.pdf');
+                });
+
+            },
+
+            //获取像素比
+            getPixelRatio(context){
+                let backingStore = context.backingStorePixelRatio ||
+                    context.webkitBackingStorePixelRatio ||
+                    context.mozBackingStorePixelRatio ||
+                    context.msBackingStorePixelRatio ||
+                    context.oBackingStorePixelRatio ||
+                    context.backingStorePixelRatio || 1;
+
+                return (window.devicePixelRatio || 1) / backingStore;
+            },
+
             //输入框事件响应
             handleInput(value, obj){
                 console.log(value);
@@ -1009,7 +1001,9 @@
             padding:5px 20px;
             .hc-main-header{
                 text-align:left;
-                margin: 5px auto;
+                height: 35px;
+                line-height: 35px;
+                margin: 0 auto 5px;
                 .hc-main-header-upload{
                     display:inline-block;
                 }
@@ -1046,7 +1040,7 @@
                    /*     width: 571px;
                         height: 864px;*/
                         margin: 0 auto;
-                        border: 1.5px solid black;
+                        border: 1px solid black;
                         position: relative;
                         box-sizing: border-box;
                         padding: 20px 10px;
