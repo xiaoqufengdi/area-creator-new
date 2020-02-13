@@ -12,6 +12,7 @@
                              ref="upload"
                              action="http://localhost:8080"
                              :on-success="handleSuccess"
+                             :on-preview="handlePreview"
                              :before-upload="beforeUpload"
                              :show-file-list="false"
                              :auto-upload="true">
@@ -168,7 +169,7 @@
         },
         created(){
 
-            this.getData();
+            //this.getData();
 
             let tableData = localStorage.getItem("tableData");
             if(tableData)
@@ -177,7 +178,7 @@
                 this.tableData = tableData;
 
             }else{
-                this.tableData = [{
+               /* this.tableData = [{
                     teachingAssistantId: "1",
                     teachingAssistantName: "数学作业本",
                     grade: "四年级下",
@@ -214,7 +215,7 @@
                     publishingHouse: "江西教育出版社",
                     validFlag: 1,
                 }];
-                localStorage.setItem("tableData", JSON.stringify(this.tableData));
+                localStorage.setItem("tableData", JSON.stringify(this.tableData));*/
             }
         },
         methods:{
@@ -247,17 +248,59 @@
             },
 
             beforeUpload(file){
+                console.log("beforeUpload");
+                let tableData = [{
+                    teachingAssistantId: "1",
+                    teachingAssistantName: "数学作业本",
+                    grade: "四年级下",
+                    total: 2000,
+                    createTime: '2016',
+                    subjectName: "语文",
+                    publishingHouse: "江西教育出版社",
+                    validFlag: 0,
+                }, {
+                    teachingAssistantId: "2",
+                    teachingAssistantName: "数学作业本",
+                    grade: "四年级下",
+                    total: 2000,
+                    createTime: '2018',
+                    subjectName: "语文",
+                    publishingHouse: "江西教育出版社",
+                    validFlag: 0,
+                }, {
+                    teachingAssistantId: "3",
+                    teachingAssistantName: "数学作业本",
+                    grade: "四年级下",
+                    total: 2000,
+                    createTime: '2026',
+                    subjectName: "语文",
+                    publishingHouse: "江西教育出版社",
+                    validFlag: 1,
+                }, {
+                    teachingAssistantId: "4",
+                    teachingAssistantName: "数学作业本",
+                    grade: "四年级下",
+                    total: 2000,
+                    createTime: '2015',
+                    subjectName: "语文",
+                    publishingHouse: "江西教育出版社",
+                    validFlag: 1,
+                }];
 
+                this.tableData.push(tableData[this.tableData.length]);
+                localStorage.setItem("tableData", JSON.stringify(this.tableData));
                 return true;
             },
+            handlePreview(file){
+                console.log("handlePreview");
+            },
             handleSuccess(response, file, fileList){
-
                 console.log('success');
                 console.log(response);
 
             },
             handSend(content){
-
+                console.log("handSend");
 
             },
             add(){

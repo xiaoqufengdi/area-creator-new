@@ -16,7 +16,8 @@ const mutations = {
     {
         switch(type){
             case 1:  //管理员
-                state.currentMenus = [{
+                state.currentMenus = [
+                  /*  {
                     title: "目录模板",
                     name: "DirectoryManagement",
                     path: "/index/directory-management",
@@ -29,7 +30,8 @@ const mutations = {
                     name: "KnowledgePointManagement",
                     path: '/index/knowledge-point-management'
 
-                },{
+                },*/
+                    {
                     title: "教辅管理",
                     name: "TeachingAssistantManagement",
                     path: "/index/teaching-assistant-management"

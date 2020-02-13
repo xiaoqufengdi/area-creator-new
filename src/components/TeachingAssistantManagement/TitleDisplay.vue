@@ -10,7 +10,6 @@
                     <el-button size="small" type="primary"  @click="handleSwitchPic">生成图片</el-button>
                     <el-button size="small" type="primary"  @click="handleSwitchPDF">生成PDF</el-button>
 
-
                   <!--       提示： <span style="color:red;">检测到word原稿不存在，请重新上传</span>
                            <el-upload
                                    class="hc-main-header-upload"
@@ -26,12 +25,13 @@
                                &lt;!&ndash;         "https://jsonplaceholder.typicode.com/posts/"                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>&ndash;&gt;
                            </el-upload>-->
                  </el-col>
-                <el-col :span="10">
-                    <el-input-number size="small" :max='maxPage' :min='minPage'  v-model.number="num"   @change="handleChangePage"></el-input-number> <span>共{{pageCount}}页</span>
+                <el-col :span="8">
+<!--                    <el-input-number size="small" :max='maxPage' :min='minPage'  v-model.number="num"   @change="handleChangePage"></el-input-number> <span>共{{pageCount}}页</span>-->
 <!--                   <el-button size="small" type="success"  @click="handleGetPage">测试请求页码 </el-button>-->
                 </el-col>
-                <el-col :span="4">
+                <el-col :span="6">
                   <el-checkbox fill="#0CC689" text-color="#0CC689" v-model="checked">是否双栏</el-checkbox>
+                  <el-checkbox fill="#0CC689" text-color="#0CC689" v-model="isShowBorder">题目和答案框</el-checkbox>
                 </el-col>
             </el-row>
             <el-row class="hc-main-content">
@@ -45,13 +45,13 @@
 <!--                    <h2>展示HTML页</h2>-->
                     <div id="myPage"     ref="myPage"  :style="{height: height + 'px', width: width + 'px'}">
                         <section :style="{width: checked ?'50%' : '100%' }">
-                            <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(0, 4)">
+                            <article :key="question.questionId" :style="{border: isShowBorder ? '0.5px solid  #2992FF' : '0.5px solid  rgba(0,0,0,0)'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(0, 4)">
                                 {{question.content }}
                             </article>
                         </section>
                         <section v-if="checked" style="width:1.5px;background:black;margin:0 5px;"> </section>
                         <section v-if="checked" :style="{width:'50%' }">
-                            <article :key="question.questionId" :style="{border: selectedQuestion.questionId === question.questionId ? '0.5px solid red' : '0.5px solid  #2992FF'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(4, 9)">
+                            <article :key="question.questionId" :style="{border: isShowBorder ? '0.5px solid  #2992FF' : '0.5px solid  rgba(0,0,0,0)'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(4, 9)">
                                 {{question.content }}
                             </article>
                         </section>
@@ -530,6 +530,7 @@
                 , teachingAssistantId: null
                 // , isShowTip: false
                 , checked: false
+                , isShowBorder: false
                 , width: 571
                 , height: 864
             };
@@ -537,21 +538,22 @@
         watch:{
             checked: function (val) {
                 console.log("checked:" + val);
-                if(val){
-                    //双栏
-
-
-                }else{
-                    //通栏
-
-                }
-
+                this.$nextTick(()=>{
+                    this.showOrHide(this.isShowBorder);
+                });
+            },
+            isShowBorder: function (val) {
+                console.log("isShowBorder:"+ val);
+                this.showOrHide(val);
             }
             
         },
         computed:{
             maxPage() {
                 return this.minPage + this.pageCount - 1
+            },
+            times(){
+                return (210/this.width).toFixed(3);
             }
 
         },
@@ -560,7 +562,7 @@
             //A4纸的大小 210mm*297mm
             // 1 inch = 25.4mm
             //window.screen.width
-
+            console.log(this.times);
 
 
         },
@@ -569,7 +571,8 @@
             this.teachingAssistantId = this.$route.params.teachingAssistantId || "1";
 
             console.log(this.teachingAssistantId);
-            let teachingAssistantInfo = localStorage.getItem("teachingAssistantInfo");
+            this.showOrHide(this.isShowBorder)
+ /*           let teachingAssistantInfo = localStorage.getItem("teachingAssistantInfo");
             if(!teachingAssistantInfo)
                 return;
 
@@ -597,7 +600,7 @@
                         });
                     }
                 });
-            }
+            }*/
         },
         methods: {
             goBack(){
@@ -683,6 +686,21 @@
                 return articleDOM;
             },
 
+            //显示隐藏答案框
+            showOrHide(isShow){
+                let span_array =  this.$refs.myPage.querySelectorAll(".answer_area");
+                if (isShow) {
+                    span_array.forEach((span)=>{
+                        span.style.border = null;
+                    })
+                }
+                else{
+                    span_array.forEach((span)=>{
+                        span.style.border =  '0.5px solid  rgba(0,0,0,0)';
+                    })
+                }
+            },
+
             //开始圈码
             handleStartDraw(event){
                 let myPage = document.querySelector("#myPage");
@@ -690,6 +708,7 @@
                 let articles = myPage.querySelectorAll("article");
                 console.log(articles);
                 articles.forEach((article,index)=>{
+
                     questionAnswerArea.exBoxes.push({width: article.clientWidth + 1, height: article.clientHeight + 1, x: article.offsetLeft, y: article.offsetTop})
 
                     let answer = article.querySelector(".answer_area");
@@ -700,10 +719,13 @@
 
                     let question = this.questions.find((question)=>question.questionId === article.id);
                     question.questionAnswerArea = JSON.parse(JSON.stringify(questionAnswerArea));
+                    console.log(question);
                     questionAnswerArea = {"exBoxes": [], "exAnswerBoxes": []};
                 });
+                // TODO 保存到后台时全部换算成纸张上的mm坐标数据
+                //console.log(this.questions);
 
-                console.log(this.questions);
+                console.log("times:" + this.times);
             },
             /**
              * @method findArticleDOM
@@ -726,29 +748,38 @@
             handleSwitchPic(event){
                 let self = this;
                 let canvas = document.createElement("canvas");
-                let context = canvas.getContext("2d");
-                let scale = 2;//this.getPixelRatio(context);
+                let scale = 3;//this.getPixelRatio(context);
                 console.log(scale);
                 canvas.width = this.width*scale;
                 canvas.height = this.height*scale;
+                canvas.style.width = this.width + "px";
+                canvas.style.height = this.height + "px";
+                let context = canvas.getContext("2d");
                 context.scale(scale, scale);
 
+                //解决缩放后偏移
+                let rect = this.$refs.myPage.getBoundingClientRect();
+                context.translate(-10, 0);
+
                 html2canvas(this.$refs.myPage, {
-                    /*allowTaint: true, */  useCORS: true
-                    , width: this.width + 2
-                    , height: this.height
-                    // , canvas: canvas
-                    //, scale: 1
+                    /*allowTaint: true, */
+                    useCORS: true
+                    , width: this.width * scale
+                    , height: this.height * scale
+                    , canvas: canvas
+                    , scale: 1//scale
                 }).then(function (canvas) {
                     console.log(canvas);
- /*                   canvas.style.width = self.width + "px";
+                    /*canvas.style.width = self.width + "px";
                     canvas.style.height = self.height + "px";*/
                     /*canvas.width = self.width;
                     canvas.height = self.height;*/
-                    let test= document.querySelector(".test");
-                    test.appendChild(canvas);
+                    /*let test= document.querySelector(".test");
+                    test.appendChild(canvas);*/
                     const Img = new Image();
                     Img.src = canvas.toDataURL('image/png', 1.0);
+                    Img.width = self.width + "px";
+                    Img.height = self.height + "px";
                     const alink = document.createElement("a");
                     alink.href = Img.src;
                     alink.download = "testImg.jpg";
@@ -759,10 +790,30 @@
             //html 转成 pdf
             handleSwitchPDF(event){
                 let self = this;
-                html2canvas(this.$refs.myPage, {/*allowTaint: true,  scale: 1,*/  useCORS: true, width: this.width + 2 , height: this.height }).then(function (canvas) {
+                let canvas = document.createElement("canvas");
+                let scale = 3;
+                console.log(scale);
+                canvas.width = this.width*scale;
+                canvas.height = this.height*scale;
+                canvas.style.width = this.width + "px";
+                canvas.style.height = this.height + "px";
+                let context = canvas.getContext("2d");
+                context.scale(scale, scale);
+
+                //解决缩放后偏移
+                /*let rect = this.$refs.myPage.getBoundingClientRect();
+                context.translate(-10.5, 0);*/
+
+                html2canvas(this.$refs.myPage, {
+                    useCORS: true
+                    , width: this.width * scale
+                    , height: this.height * scale
+                    , canvas: canvas
+                    , scale: 1//scale
+                }).then(function (canvas) {
                     console.log(canvas);
-                    let test= document.querySelector(".test");
-                    test.appendChild(canvas);
+                    /*let test= document.querySelector(".test");
+                    test.appendChild(canvas);*/
 
                     //返回图片dataURL，参数：图片格式和清晰度(0-1)
                     var pageData = canvas.toDataURL('image/jpeg', 1.0);
@@ -781,7 +832,7 @@
             },
 
             //获取像素比
-            getPixelRatio(context){
+            /*getPixelRatio(context){
                 let backingStore = context.backingStorePixelRatio ||
                     context.webkitBackingStorePixelRatio ||
                     context.mozBackingStorePixelRatio ||
@@ -790,7 +841,7 @@
                     context.backingStorePixelRatio || 1;
 
                 return (window.devicePixelRatio || 1) / backingStore;
-            },
+            },*/
 
             //输入框事件响应
             handleInput(value, obj){
@@ -1046,6 +1097,9 @@
                         padding: 20px 10px;
                         display: flex;
                         flex-direction: row;
+        /*                article{
+                            box-sizing: border-box;
+                        }*/
 
                     }
                 }
