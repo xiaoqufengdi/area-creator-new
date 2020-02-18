@@ -105,6 +105,8 @@
                             <template slot-scope="scope">
                                 <!--<el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>-->
                                 <el-button @click="handleClickEdit(scope.row)" type="text" size="medium">查看</el-button>
+                                <el-button @click="handleClickDelete(scope.row)" type="text" size="medium">删除</el-button>
+
                             </template>
                         </el-table-column>
                     </el-table>
@@ -227,6 +229,20 @@
                 console.log(row);
                 this.$router.push({name: "TitleDisplay", params:{teachingAssistantId: row.teachingAssistantId}});
 
+            },
+            handleClickDelete(row){
+                this.$alert("确定删除？", "提示", {
+                    callback: action => {
+                        console.log(action);
+                        let tableData = localStorage.getItem("tableData");
+                        tableData = JSON.parse(tableData);
+                        tableData = tableData.filter((list)=>{
+                            list.teachingAssistantId !== row.teachingAssistantId
+                        });
+                        this.tableData = tableData;
+                        localStorage.setItem("tableData", JSON.stringify(tableData));
+                    }
+                });
             },
             search(){
                 console.log(this.year);

@@ -1,61 +1,114 @@
 <template>
     <el-row class="hc-main-reader" v-loading="loading">
-        <el-col :xs="2" :md="3" :lg="4">
+        <el-col :xs="1" :md="2" :lg="3">
             <el-button type="primary" size="small" @click="goBack">返回</el-button>
         </el-col>
-        <el-col :xs="20" :md="18" :lg="16" class="hc-main-center">
-            <el-row class="hc-main-header">
-                <el-col :span="10">
-                  <el-button size="small" type="primary"  @click="handleStartDraw">获取坐标</el-button>
-                    <el-button size="small" type="primary"  @click="handleSwitchPic">生成图片</el-button>
-                    <el-button size="small" type="primary"  @click="handleSwitchPDF">生成PDF</el-button>
-
-                  <!--       提示： <span style="color:red;">检测到word原稿不存在，请重新上传</span>
-                           <el-upload
-                                   class="hc-main-header-upload"
-                                   ref="upload"
-                                   action="fakeaction"
-                                   :http-request="handSend"
-                                   :on-success="handleSuccess"
-                                   :before-upload="beforeUpload"
-                                   :file-list="fileList"
-                                   :show-file-list="false"
-                                   :auto-upload="true">
-                               <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                               &lt;!&ndash;         "https://jsonplaceholder.typicode.com/posts/"                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>&ndash;&gt;
-                           </el-upload>-->
-                 </el-col>
-                <el-col :span="8">
-<!--                    <el-input-number size="small" :max='maxPage' :min='minPage'  v-model.number="num"   @change="handleChangePage"></el-input-number> <span>共{{pageCount}}页</span>-->
-<!--                   <el-button size="small" type="success"  @click="handleGetPage">测试请求页码 </el-button>-->
-                </el-col>
-                <el-col :span="6">
-                  <el-checkbox fill="#0CC689" text-color="#0CC689" v-model="checked">是否双栏</el-checkbox>
-                  <el-checkbox fill="#0CC689" text-color="#0CC689" v-model="isShowBorder">题目和答案框</el-checkbox>
-                </el-col>
-            </el-row>
+        <el-col :xs="22" :md="20" :lg="18" class="hc-main-center">
             <el-row class="hc-main-content">
-<!--                <el-col class="hc-main-content-pic"  :span="8"  >
-                    <h2>原始教辅</h2>
-                    <img :src="picSrc" alt="picture" >
+                <el-col   :span="4"  >
+                    <h5>章节目录</h5>
+                    <el-tree show-checkbox :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
 
-                </el-col>-->
+                </el-col>
+                <el-col class="hc-main-content-pic"  :span="10"  :style="{position: 'relative'}">
+                    <h5>展示内容区域</h5>
+                    <el-row>
+                        <el-col :span="4" class="my_key">题型：</el-col>
+                        <el-col :span="20" class="my_value">
+                            <el-radio-group v-model="questionType" size="mini">
+                                <el-radio-button label="全部"></el-radio-button>
+                                <el-radio-button label="选择题"></el-radio-button>
+                                <el-radio-button label="填空题"></el-radio-button>
+                                <el-radio-button label="计算题"></el-radio-button>
+                                <el-radio-button label="解答题"></el-radio-button>
+                            </el-radio-group>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="4" class="my_key">考察能力：</el-col>
+                        <el-col :span="20" class="my_value">
+                            <el-radio-group v-model="ability" size="mini">
+                                <el-radio-button label="全部"></el-radio-button>
+                                <el-radio-button label="了解"></el-radio-button>
+                                <el-radio-button label="理解"></el-radio-button>
+                                <el-radio-button label="掌握"></el-radio-button>
+                                <el-radio-button label="运用"></el-radio-button>
+                            </el-radio-group>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="4" class="my_key">难度：</el-col>
+                        <el-col :span="20" class="my_value">
+                            <el-radio-group v-model="difficulty" size="mini">
+                                <el-radio-button label="全部"></el-radio-button>
+                                <el-radio-button label="易"></el-radio-button>
+                                <el-radio-button label="较易"></el-radio-button>
+                                <el-radio-button label="较难"></el-radio-button>
+                                <el-radio-button label="难"></el-radio-button>
+                            </el-radio-group>
+                        </el-col>
+                    </el-row>
+                    <section :style="{width: '100%' }">
+                        <article :key="question.questionId+ 'min'" :style="{border:  '0.5px solid  #2992FF'}" :id="question.questionId"  v-for="(question, index) in questions.slice((pageNum - 1)*pageSize, pageNum*pageSize)">
+                            <article v-html="question.content">
+                                {{question.content }}
+                            </article>
+                            <footer style="text-align:right;padding:5px" >
+<!--                                <el-button size="small" type="primary"  @click="handleClick(question)">参与组题</el-button>-->
+                                <el-checkbox fill="#0CC689" text-color="#0CC689"  v-model="question.selected" :checked="Boolean(question.selected)"  @change="(value)=>{
+                                    handleChange(value, question)
+                                }">参与组题</el-checkbox>
 
-                <el-col :span="24" class="hc-main-content-html">
-<!--                    <h2>展示HTML页</h2>-->
+                            </footer>
+                        </article>
+
+                    </section>
+                    <footer style="width:100%;margin: 10px auto; bottom:10px;position:absolute;">
+                        <el-pagination
+                                background
+                                layout="prev, pager, next"
+                                :page-size = "pageSize"
+                                :total="questions.length"
+                                @current-change="handleChangeCurrentPage"
+                        >
+                        </el-pagination>
+                    </footer>
+
+                </el-col>
+
+                <el-col :span="10" class="hc-main-content-html">
+                    <el-row class="hc-main-header">
+
+                        <el-col :span="24" >
+                            <el-checkbox fill="#0CC689" text-color="#0CC689" v-model="checked">双栏</el-checkbox>
+                            <el-checkbox fill="#0CC689" text-color="#0CC689" v-model="isShowBorder">题目和答案框</el-checkbox>
+                        </el-col>
+                    </el-row>
+
+                    <!--                    <h2>展示HTML页</h2>-->
                     <div id="myPage"     ref="myPage"  :style="{height: height + 'px', width: width + 'px'}">
                         <section :style="{width: checked ?'50%' : '100%' }">
-                            <article :key="question.questionId" :style="{border: isShowBorder ? '0.5px solid  #2992FF' : '0.5px solid  rgba(0,0,0,0)'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(0, 4)">
+                            <article :key="question.questionId" :style="{border: isShowBorder ? '0.5px solid  #2992FF' : '0.5px solid  rgba(0,0,0,0)'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in showQuestions.slice(0, pageSize)">
                                 {{question.content }}
                             </article>
                         </section>
                         <section v-if="checked" style="width:1.5px;background:black;margin:0 5px;"> </section>
                         <section v-if="checked" :style="{width:'50%' }">
-                            <article :key="question.questionId" :style="{border: isShowBorder ? '0.5px solid  #2992FF' : '0.5px solid  rgba(0,0,0,0)'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in questions.slice(4, 9)">
+                            <article :key="question.questionId" :style="{border: isShowBorder ? '0.5px solid  #2992FF' : '0.5px solid  rgba(0,0,0,0)'}" :id="question.questionId" v-html="question.content" v-for="(question, index) in showQuestions.slice(pageSize)">
                                 {{question.content }}
                             </article>
                         </section>
                     </div>
+
+                    <el-row class="hc-main-footer">
+                        <el-col :span="24" >
+                            <el-button size="small" type="primary"  @click="handleGetPosition">获取坐标</el-button>
+                            <el-button size="small" type="primary"  @click="handleSwitchPic">生成图片</el-button>
+                            <el-button size="small" type="primary"  @click="handleSwitchPDF">生成PDF</el-button>
+
+                        </el-col>
+                    </el-row>
+
                 </el-col>
                 <!--<el-col :span="8" class="hc-main-content-edit">
                     <h2 style="border-bottom: 1px solid #0CC689;">题目校对</h2>
@@ -114,7 +167,7 @@
                 </el-col>-->
             </el-row>
         </el-col>
-        <el-col :xs="2" :md="3" :lg="4"></el-col>
+        <el-col :xs="1" :md="2" :lg="3"></el-col>
     </el-row>
 </template>
 <script>
@@ -128,7 +181,7 @@
         data() {
             return {
                 questions: [
-                               {questionId: "1" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
+                               {questionId: "1a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
                                 '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
                                 '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
                                 '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
@@ -148,7 +201,7 @@
                                 '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                               '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
                                 '                                style="font-family:NEU-BZ">17</span></p>'}
-                                ,{questionId: "2" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
+                                ,{questionId: "2a" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
                                 '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                                 '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
                                 '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
@@ -177,9 +230,9 @@
                                 '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                                 '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                                 '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                    ,{questionId: "3" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt">在△ABC中，角A，B，C的对边分别为<i>a</i>，<i>b</i>，<i>c</i>，若＜0，则△ABC <span class="answer_area">（&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ）</span>. <br/>  <br/>A.一定是锐角三角形&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;B.一定是直角三角形<br/>  <br/>C.一定是钝角三角形&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D.是锐角或直角三角形</p>'}
+                    ,{questionId: "3a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt">在△ABC中，角A，B，C的对边分别为<i>a</i>，<i>b</i>，<i>c</i>，若＜0，则△ABC <span class="answer_area">（&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ）</span>. <br/>  <br/>A.一定是锐角三角形&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;B.一定是直角三角形<br/>  <br/>C.一定是钝角三角形&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D.是锐角或直角三角形</p>'}
 /*
-                    ,{questionId: "4" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
+                    ,{questionId: "4a" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
                             '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
                             '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
@@ -209,7 +262,7 @@
                             '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
 */
-                    ,{questionId: "5" , title:"第3道题",pageNum: 1, content: ['<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span',
+                    ,{questionId: "5a" , title:"第3道题",pageNum: 1, content: ['<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span',
                                     '        style="font-family:NEU-BZ">3</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span',
                                     '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">如图</span><span',
                                     '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">已知</span><span',
@@ -244,7 +297,7 @@
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.002.png" width="171"   height="152" alt=""     style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span  style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span style="font-family:NEU-HZ">3</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
-                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img  crossOrigin="anonymous" src="http://127.0.0.1:8081/test.jpg" width="106"    height="178" alt=""   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
+                                    '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img  crossOrigin="anonymous" src="./mock/test.jpg" width="106"    height="178" alt=""   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span style="font-family:NEU-HZ">4</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
                              /*       '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.004.png" width="152"                           height="133" alt=""                   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
@@ -255,7 +308,7 @@
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span  style="font-family:NEU-HZ">6</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:ignore">&#xa0;</span>',
                                     '</p>*/].join("")}
-                    ,{questionId: "6" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
+                    ,{questionId: "6a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
                             '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
@@ -275,7 +328,7 @@
                             '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
                             '                                style="font-family:NEU-BZ">17</span></p>'}
-                    ,{questionId: "7" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
+                    ,{questionId: "7a" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
                             '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
                             '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
@@ -303,7 +356,7 @@
                             '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                    ,{questionId: "8" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
+                    ,{questionId: "8a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
                             '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
@@ -323,7 +376,7 @@
                             '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
                             '                                style="font-family:NEU-BZ">17</span></p>'}
-                    ,{questionId: "9" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
+                    ,{questionId: "9a" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
                             '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
                             '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
@@ -351,7 +404,7 @@
                             '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                    ,{questionId: "10" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
+                    ,{questionId: "10a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
                             '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
@@ -371,7 +424,7 @@
                             '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
                             '                                style="font-family:NEU-BZ">17</span></p>'}
-                    ,{questionId: "11" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
+                    ,{questionId: "11a" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
                             '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
                             '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
@@ -399,7 +452,7 @@
                             '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                    ,{questionId: "12" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
+                    ,{questionId: "12a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
                             '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
@@ -419,7 +472,7 @@
                             '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
                             '                                style="font-family:NEU-BZ">17</span></p>'}
-                    ,{questionId: "13" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
+                    ,{questionId: "13a" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
                             '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
                             '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
@@ -447,7 +500,7 @@
                             '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                    ,{questionId: "14" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
+                    ,{questionId: "14a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
                             '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
@@ -467,7 +520,7 @@
                             '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
                             '                                style="font-family:NEU-BZ">17</span></p>'}
-                    ,{questionId: "15" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
+                    ,{questionId: "15a" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
                             '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
                             '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
@@ -496,7 +549,7 @@
                             '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                             '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-                    ,{questionId: "16" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
+                    ,{questionId: "16a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
                             '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
                             '                                style="font-family:方正书宋_GBK">一个等腰三角形的两边长分别是</span><span style="font-family:NEU-BZ">3</span><span'+
@@ -517,12 +570,12 @@
                             '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
                             '                                style="font-family:NEU-BZ">17</span></p>'}
                 ]
+                , showQuestions: []
                 ,picSrc: null,//"./static/math_47.png",
                 selectedQuestion: {questionId:null, content: [/*{type: "SPAN", str: "" }, {type: "IMG", src: "", width}*/] }
                 , currentPageImgs: [
                     // {src: null, width: null, selected: false}
                     ]
-                , fileList: []
                 , loading: false
                 , pageCount: 46
                 , minPage: 1
@@ -533,6 +586,48 @@
                 , isShowBorder: false
                 , width: 571
                 , height: 864
+
+                , data: [{
+                    label: '人民教育出版社',
+                    children: [
+                    {
+                        label: '七年级上',
+                        children: [{
+                            label: '第一章有理数',
+                            children: [{
+                                label: '正数和负数'
+                            },{
+                                label: '有理数'
+                            },{
+                                label: '有理数的加减法'
+                            },{
+                                label: '有理数的乘除法'
+                            },{
+                                label: '有理数的乘方'
+                            }
+                            ]
+                        },{
+                            label: '第二章整数的加减'
+                        },{
+                            label: '第三章一元一次方程'
+                        },{
+                            label: '几何图形初步'
+                        }]
+                    },{
+                        label: '七年级下'
+                        },{
+                        label: '八年级上'
+                     }]
+                }],
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                }
+                , questionType: '全部'
+                , ability:'全部'
+                ,difficulty: '全部'
+                , pageNum : 1
+                , pageSize: 5
             };
         },
         watch:{
@@ -545,8 +640,19 @@
             isShowBorder: function (val) {
                 console.log("isShowBorder:"+ val);
                 this.showOrHide(val);
+            },
+            questions: {
+                handler(val, oldVal){
+                    console.log(val, oldVal);
+                },
+                deep: true
             }
-            
+/*            showQuestions: {
+                handler(val, oldVal){
+                    console.log(val, oldVal);
+                },
+                deep: true
+            }*/
         },
         computed:{
             maxPage() {
@@ -554,7 +660,10 @@
             },
             times(){
                 return (210/this.width).toFixed(3);
-            }
+            },
+  /*          showQuestions(){
+                return this.questions.filter(question=>question.selected) || [];
+            }*/
 
         },
         created(){
@@ -563,7 +672,9 @@
             // 1 inch = 25.4mm
             //window.screen.width
             console.log(this.times);
-
+            this.questions.forEach((question)=>{
+                question.selected = false;
+            })
 
         },
         mounted(){
@@ -702,10 +813,11 @@
             },
 
             //开始圈码
-            handleStartDraw(event){
+            handleGetPosition(event){
+                this.$alert("坐标数据见控制台");
                 let myPage = document.querySelector("#myPage");
                 let questionAnswerArea = {"exBoxes": [], "exAnswerBoxes": []};
-                let articles = myPage.querySelectorAll("article");
+                let articles = this.$refs.myPage.querySelectorAll("article");
                 console.log(articles);
                 articles.forEach((article,index)=>{
 
@@ -853,9 +965,19 @@
                 }, 2000)
             },
             //checkbox 事件响应
-            handleChange(isSelected, img){
-                img.selected = isSelected;
-                console.log(isSelected, img);
+            handleChange(isChecked, question){
+                //let isExist = this.questions.some(q=>q === question);
+                question.isSelected = isChecked;
+                if (isChecked) {
+                    this.showQuestions.push(question);
+
+                }else{
+                    this.showQuestions = this.showQuestions.filter(q=>q!==question);
+                }
+
+                this.$nextTick(()=>{
+                    this.showOrHide(this.isShowBorder);
+                })
             },
             //保存修改
             handleSave(){
@@ -980,7 +1102,11 @@
                     console.log(error);
                 });
             },
-
+            handleChangeCurrentPage(pageNum){
+                console.log(pageNum);
+                this.pageNum = pageNum;
+            },
+/*
             handleChangePage(value) {
                 console.log(value);
                 let params = {
@@ -997,6 +1123,7 @@
                 })
 
             },
+*/
 
             updateImg(){
                 this.$nextTick(()=>{
@@ -1035,7 +1162,7 @@
 
 </script>
 <style scoped>
-    article>>> span.answer_area{
+    #myPage article>>> span.answer_area{
             display: inline-block;
             border: 0.5px solid red;
     }
@@ -1051,7 +1178,6 @@
             background: white;
             padding:5px 20px;
             .hc-main-header{
-                text-align:left;
                 height: 35px;
                 line-height: 35px;
                 margin: 0 auto 5px;
@@ -1059,6 +1185,7 @@
                     display:inline-block;
                 }
                 .el-col{
+                    text-align: center;
                     height: 30px;
                     line-height: 30px;
                 }
@@ -1070,10 +1197,21 @@
                     overflow: auto;
                 }
                 .hc-main-content-pic{
-                    border: 1px solid @color;
+                    border-left: 1px solid @color;
+                    border-right: 1px solid @color;
                     img{
                         width: 100%;
                         background-size: contain;
+                    }
+                    >.el-row{
+                        height: 35px;
+                        line-height: 35px;
+                    }
+                    .my_key{
+                        text-align:right;
+                    }
+                    .my_value{
+                        text-align: left;
                     }
                 }
                 .hc-main-content-edit{
@@ -1084,7 +1222,7 @@
                     }
                 }
                 .hc-main-content-html{
-                    border: 1px solid @color;
+                    //border: 1px solid @color;
                     padding: 5px;
                     #myPage{
                         text-align: left;
@@ -1102,6 +1240,16 @@
                         }*/
 
                     }
+                }
+            }
+            .hc-main-footer{
+                margin: 10px auto;
+                height: 40px;
+                line-height: 40px;
+                .el-col{
+                    text-align: center;
+              /*      height: 30px;
+                    line-height: 30px;*/
                 }
             }
         }
