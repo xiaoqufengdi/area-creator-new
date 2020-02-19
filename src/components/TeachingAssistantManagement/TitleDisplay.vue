@@ -54,7 +54,6 @@
                                 {{question.content }}
                             </article>
                             <footer style="text-align:right;padding:5px" >
-<!--                                <el-button size="small" type="primary"  @click="handleClick(question)">参与组题</el-button>-->
                                 <el-checkbox fill="#0CC689" text-color="#0CC689"  v-model="question.selected" :checked="Boolean(question.selected)"  @change="(value)=>{
                                     handleChange(value, question)
                                 }">参与组题</el-checkbox>
@@ -110,61 +109,6 @@
                     </el-row>
 
                 </el-col>
-                <!--<el-col :span="8" class="hc-main-content-edit">
-                    <h2 style="border-bottom: 1px solid #0CC689;">题目校对</h2>
-                    <div  style="height:85%;overflow:auto;padding: 5px;">
-                        <h5 style="text-align:left;margin:10px 5px 5px;"> <el-tag type="success">内容部分：</el-tag></h5>
-                        <div  :id="selectedQuestion.questionId" v-show="selectedQuestion.content.length">
-                            <template v-for="(content, index) in selectedQuestion.content">
-                                <el-input v-if="content.type==='SPAN'" class="hc-main-content-edit-input"
-                                          :key="index"
-                                          type="textarea"
-                                          :autosize="{ minRows: 10}"
-                                          placeholder="请从展示HTML页内选择题目"
-                                          :value="content.str"
-                                          @input="(value)=>{ handleInput(value, content)}"
-                                >
-                                </el-input>
-                            </template>
-                        </div>
-                        &lt;!&ndash;没有数据时占个位置&ndash;&gt;
-                        <div v-show="Boolean(!selectedQuestion.content.length)">
-                            <el-input
-                                    :key="1"
-                                    class="hc-main-content-edit-input"
-                                    type="textarea"
-                                    :autosize="{ minRows: 10}"
-                                    placeholder="请从展示HTML页内选择题目"
-                                    value="">
-                            </el-input>
-                        </div>
-
-                        <h5 style="text-align:left;margin:10px 5px;"> <el-tag type="success">图片部分：</el-tag>
-&lt;!&ndash;                            <a href="https://question-test.oss-cn-beijing.aliyuncs.com/数学/数学.html" target="_blank">jump</a>&ndash;&gt;
-                        </h5>
-                        <div style="border:1px solid #0CC689">
-                            <el-card style="width:49%; float:left"
-                                    :key="index"  v-for="(imgObj, index) in currentPageImgs"
-                                    :body-style="{ padding: '5px', height: '260px' }"
-                                    shadow="hover"
-                            >
-                                <img :src="imgObj.src" style="width:100%;height:210px; background-size: contain;">
-                                <div style="padding: 10px;">
-                                    <div style="margin-top: 5px;">
-                                        <el-checkbox :value="imgObj.selected" :label="imgObj.src" @change="(value, event)=>{ handleChange(value, imgObj )}">picture</el-checkbox>
-                                    </div>
-                                </div>
-                            </el-card>
-                        </div>
-
-
-
-
-                    </div>
-
-                    <el-button type="success" style="margin: 10px 10px;" @click="getSelectedQuestion">获取</el-button>
-                    <el-button type="success" style="margin: 10px 10px;" @click="handleSave">保存</el-button>
-                </el-col>-->
             </el-row>
         </el-col>
         <el-col :xs="1" :md="2" :lg="3"></el-col>
@@ -571,17 +515,8 @@
                             '                                style="font-family:NEU-BZ">17</span></p>'}
                 ]
                 , showQuestions: []
-                ,picSrc: null,//"./static/math_47.png",
-                selectedQuestion: {questionId:null, content: [/*{type: "SPAN", str: "" }, {type: "IMG", src: "", width}*/] }
-                , currentPageImgs: [
-                    // {src: null, width: null, selected: false}
-                    ]
                 , loading: false
-                , pageCount: 46
-                , minPage: 1
-                , num: 1
                 , teachingAssistantId: null
-                // , isShowTip: false
                 , checked: false
                 , isShowBorder: false
                 , width: 571
@@ -655,9 +590,9 @@
             }*/
         },
         computed:{
-            maxPage() {
+/*            maxPage() {
                 return this.minPage + this.pageCount - 1
-            },
+            },*/
             times(){
                 return (210/this.width).toFixed(3);
             },
@@ -670,12 +605,10 @@
             //获取屏幕分辨率
             //A4纸的大小 210mm*297mm
             // 1 inch = 25.4mm
-            //window.screen.width
             console.log(this.times);
             this.questions.forEach((question)=>{
                 question.selected = false;
             })
-
         },
         mounted(){
             //取所有页码
@@ -722,7 +655,29 @@
                 console.log(data);
             },
 
-            getSelectedQuestion(){
+
+            //checkbox 事件响应
+            handleChange(isChecked, question){
+                //let isExist = this.questions.some(q=>q === question);
+                question.isSelected = isChecked;
+                if (isChecked) {
+                    this.showQuestions.push(question);
+
+                }else{
+                    this.showQuestions = this.showQuestions.filter(q=>q!==question);
+                }
+
+                this.$nextTick(()=>{
+                    this.showOrHide(this.isShowBorder);
+                })
+            },
+
+            handleChangeCurrentPage(pageNum){
+                console.log(pageNum);
+                this.pageNum = pageNum;
+            },
+
+            /*getSelectedQuestion(){
                 let articleDOM = this.getSelectedContents();
                 if (articleDOM) {
                     console.log(articleDOM);
@@ -761,14 +716,14 @@
                     this.selectedQuestion.content.push({type: "SPAN", str: str});
                     console.log(this.selectedQuestion);
                 }
-            },
+            },*/
 
             /**
              * @method getSelectedContents
              * 获取鼠标选中内容的HTML片段
              * @returns {string}
              */
-            getSelectedContents()
+   /*         getSelectedContents()
             {
                 let range;
                 if (window.getSelection)
@@ -795,7 +750,7 @@
                 let stopDOM = document.querySelector("#myPage");
                 let articleDOM = this.findTagNameDOM(range.commonAncestorContainer, "ARTICLE", stopDOM);
                 return articleDOM;
-            },
+            },*/
 
             //显示隐藏答案框
             showOrHide(isShow){
@@ -845,7 +800,7 @@
              * @param currentDOM
              * @param tagName
              */
-            findTagNameDOM (currentDOM, tagName, stopDOM) {
+/*            findTagNameDOM (currentDOM, tagName, stopDOM) {
                 if (currentDOM.tagName === tagName) {
                     return currentDOM;
                 }
@@ -855,7 +810,7 @@
                 else{
                     return this.findTagNameDOM(currentDOM.parentNode,tagName , stopDOM);
                 }
-            },
+            },*/
             //html转成图片
             handleSwitchPic(event){
                 let self = this;
@@ -943,217 +898,7 @@
 
             },
 
-            //获取像素比
-            /*getPixelRatio(context){
-                let backingStore = context.backingStorePixelRatio ||
-                    context.webkitBackingStorePixelRatio ||
-                    context.mozBackingStorePixelRatio ||
-                    context.msBackingStorePixelRatio ||
-                    context.oBackingStorePixelRatio ||
-                    context.backingStorePixelRatio || 1;
 
-                return (window.devicePixelRatio || 1) / backingStore;
-            },*/
-
-            //输入框事件响应
-            handleInput(value, obj){
-                console.log(value);
-                obj.str = value;
-
-                setTimeout(()=>{
-                    console.log(this.selectedQuestion);
-                }, 2000)
-            },
-            //checkbox 事件响应
-            handleChange(isChecked, question){
-                //let isExist = this.questions.some(q=>q === question);
-                question.isSelected = isChecked;
-                if (isChecked) {
-                    this.showQuestions.push(question);
-
-                }else{
-                    this.showQuestions = this.showQuestions.filter(q=>q!==question);
-                }
-
-                this.$nextTick(()=>{
-                    this.showOrHide(this.isShowBorder);
-                })
-            },
-            //保存修改
-            handleSave(){
-                if (!this.selectedQuestion.questionId) {
-                    this.$message('请先选择题目');
-
-                }
-                let question = this.questions.find(question=>{
-                    return question.questionId === this.selectedQuestion.questionId;
-                });
-                let str = this.selectedQuestion.content[0].str;
-                //大于号和小于号替换
-                str = str.replace(/\</g, "&lt;");
-                str = str.replace(/\>/g, "&gt;");
-
-
-
-                let selectedImgs = this.currentPageImgs.filter(img=>img.selected);
-                if(selectedImgs && selectedImgs.length)
-                {
-                    question.imgInfo = selectedImgs;
-                }
-                console.log("str: "+ str);
-                // todo 调接口更新这道题目信息
-
-                str = str.replace(/\n/g, "<br/>");
-                this.selectedQuestion.content[0].str = str;
-                //  <span style="font-family:NEU-BZ; font-style:italic">.</span>  <span style="font-family:方正书宋_GBK">
-                question.content = "<p style='margin-top:0pt; margin-bottom:0pt; font-size:10.5pt; font-family:方正书宋_GBK'>" + this.selectedQuestion.content[0].str  + "</p>";
-                question.isRevise = true;
-                console.log(question);
-
-                this.selectedQuestion = {questionId:null, content: [/*{type: "SPAN", str: "" }, {type: "IMG", src: "", width}*/] }
-            },
-            beforeUpload(file){
-
-                return true;
-            },
-            handleSuccess(response, file, fileList){
-                console.log(response);
-                console.log(file);
-                console.log(fileList);
-
-            },
-            handSend(content){
-
-                //取第一页内容展示
-                console.log("send");
-                this.loading = true;
-                console.log(content);
-                let formData = new FormData();
-                formData.append(content.filename, content.file);
-                this.$message('正在上传，请稍后...');
-
-                request.upload( formData).then((response)=>{
-                    console.log(response);
-                    this.$message('上传成功，正在转换成HTML...');
-                    this.loading = false;
-
-                    /*
-                        request.getPageNumber({teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d"}).then(res2=>{
-                            console.log(res2);
-
-                        }).catch(err=>{
-                            console.log(err);
-                        });
-                    */
-
-                    let options = {fileName: response.html, teachingAssistantId: this.teachingAssistantId};//"07ddf5690e40c07e3057bd4dafd68d5d"
-                    // options.fileName = options.replace(/\\/g,'\\\\');
-                    request.switchContent(options).then((res1)=>{
-                        console.log("switchContent");
-                        console.log(res1);
-                        request.getPageNumber({teachingAssistantId: this.teachingAssistantId}).then(res2=>{
-                            console.log(res2);
-                            this.minPage = res2.data[0].pageNum;
-                            this.num = res2.data[0].pageNum;
-                            //this.pageCount = res2.data.length;
-                            let teachingAssistantInfo = localStorage.getItem("teachingAssistantInfo");
-                            if(teachingAssistantInfo)
-                            {
-                                teachingAssistantInfo = JSON.parse(teachingAssistantInfo);
-                                let obj = teachingAssistantInfo.find((item)=>item.teachingAssistantId === this.teachingAssistantId);
-                                if(obj)
-                                {
-                                    obj.num = this.num;
-                                }
-                                else{
-                                    teachingAssistantInfo.push({teachingAssistantId: this.teachingAssistantId, num: this.num});
-                                }
-
-                                localStorage.setItem("teachingAssistantInfo", JSON.stringify(teachingAssistantInfo));
-                            }
-                            else{
-
-                                localStorage.setItem("teachingAssistantInfo", JSON.stringify([{teachingAssistantId: this.teachingAssistantId, num: this.num}]));
-                            }
-
-
-
-                            //取第一页内容展示
-                            let params = {
-                                teachingAssistantId: this.teachingAssistantId,//"07ddf5690e40c07e3057bd4dafd68d5d",
-                                pageNum: this.num
-                            };
-
-
-                            request.getHTMLByPageNumber(params).then(res3=>{
-                                console.log("第一页内容");
-                                console.log(res3);
-                                this.questions = res3.data.html;
-                                this.picSrc = res3.data.pdf;
-                                this.updateImg()
-                            }).catch((err)=>{
-                                console.log(err);
-                            });
-                        }).catch(err=>{
-                            console.log(err);
-                        });
-                    });
-                }).catch((error)=>{
-                    console.log(error);
-                });
-            },
-            handleChangeCurrentPage(pageNum){
-                console.log(pageNum);
-                this.pageNum = pageNum;
-            },
-/*
-            handleChangePage(value) {
-                console.log(value);
-                let params = {
-                    teachingAssistantId: this.teachingAssistantId, // "07ddf5690e40c07e3057bd4dafd68d5d",
-                    pageNum: value
-                };
-                request.getHTMLByPageNumber(params).then(res=>{
-                    console.log(res);
-                    this.questions = res.data.html;
-                    this.picSrc = res.data.pdf;
-                    this.updateImg();
-                }).catch((err)=>{
-                    console.log(err);
-                })
-
-            },
-*/
-
-            updateImg(){
-                this.$nextTick(()=>{
-
-                    let imgs = this.$refs.myPage.querySelectorAll("p>img");
-                    this.currentPageImgs = [];
-                    imgs.forEach((img)=>{
-                        this.currentPageImgs.push({
-                            src: img.src,
-                            width: img.width,
-                            height: img.height,
-                            selected: false
-                        });
-                    });
-                });
-            },
-
-            handleGetPage(){
-
-                let params = {
-                    teachingAssistantId: "07ddf5690e40c07e3057bd4dafd68d5d",
-                    pageNum: 47
-                };
-                request.getHTMLByPageNumber(params).then(res3=>{
-                    console.log("第一页内容");
-                    console.log(res3);
-                }).catch((err)=>{
-                    console.log(err);
-                });
-            }
         },
         components: {}
     }
@@ -1226,8 +971,7 @@
                     padding: 5px;
                     #myPage{
                         text-align: left;
-                   /*     width: 571px;
-                        height: 864px;*/
+
                         margin: 0 auto;
                         border: 1px solid black;
                         position: relative;
@@ -1235,9 +979,7 @@
                         padding: 20px 10px;
                         display: flex;
                         flex-direction: row;
-        /*                article{
-                            box-sizing: border-box;
-                        }*/
+
 
                     }
                 }
@@ -1254,21 +996,5 @@
             }
         }
     }
-
-   /* .hc-title-display{
-        height: 100%;
-        border: 1px solid blue;
-    }
-    .hc-title-display-aside{
-        height: 100%;
-        border: 1px solid green;
-
-    }
-    .hc-title-display-main{
-        height: 100%;
-        border: 1px solid green;
-    }
-
-*/
 
 </style>
