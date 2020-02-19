@@ -132,38 +132,17 @@ request.updToken = () => {
     request.token = token;
     axios.defaults.headers['Authorization'] = token;
 };
+*/
 
-
-
-
-request.post = (url, params) =>{
+request.getPeriod = ()=>{
     return new Promise((resolve, reject)=>{
-        axios.post(url, params).then(res=>{
+        axios.post("/api/questionDictionary/period", { headers: { 'Content-Type': 'application/json'} }).then(res=>{
             resolve(res.data)
         }).catch(err=>{
             reject(err.data);
-            handleErr(err);
         })
     });
 };
-
-
-
-request.get = (url, params, oss_json) => {
-    let headers = {'Cache-Control': 'no-cache'};
-    return new Promise((resolve, reject)=>{
-        axios.get(url+(url.slice(-5)==='.json'?'?dateId=':'&dateId=')+(new Date()).getTime(), params, headers)
-            .then((res) => {
-                resolve(res.data);
-            }).catch(err=>{
-            reject(err.data);
-            if(!oss_json)
-                handleErr(res)
-        })
-    });
-};
-*/
-
 
 
 

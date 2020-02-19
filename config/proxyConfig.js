@@ -4,8 +4,8 @@
 
 module.exports = {
     proxy: {
-        '/api': {    //将www.exaple.com印射为/apis
-            target: 'http://192.168.1.65:8080',  // 跨域地址
+        '/api': {
+            target: 'http://139.196.151.29:8097',//'http://192.168.1.65:8080',  // 跨域地址
             secure: false,  // 如果是https接口，需要配置这个参数
             changeOrigin: true,  //是否跨域
             pathRewrite: {
