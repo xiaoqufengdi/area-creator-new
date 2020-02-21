@@ -5,55 +5,64 @@
         </el-col>
         <el-col :xs="22" :md="20" :lg="18" class="hc-main-center">
             <el-row class="hc-main-content">
-                <el-col   :span="4"  >
-                    <h5>章节目录</h5>
-                    <el-tree show-checkbox :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+                <el-col   :span="6"  >
+                    <h4>初中数学章节目录</h4>
+                    <el-tree show-checkbox :load="loadData" lazy :props="defaultProps" @node-click="handleNodeClick"	></el-tree>
 
                 </el-col>
-                <el-col class="hc-main-content-pic"  :span="10"  :style="{position: 'relative'}">
-                    <h5>展示内容区域</h5>
+                <el-col class="hc-main-content-pic"  :span="8"  :style="{position: 'relative'}">
+                    <h4>展示内容区域</h4>
                     <el-row>
-                        <el-col :span="4" class="my_key">题型：</el-col>
-                        <el-col :span="20" class="my_value">
+                        <el-col :span="6" class="my_key">题型：</el-col>
+                        <el-col :span="18" class="my_value">
                             <el-radio-group v-model="questionType" size="mini">
                                 <el-radio-button label="全部"></el-radio-button>
+
+                                <el-radio-button :key="obj.node" :label="obj.nodeName" v-for="obj in questionTypeArr"></el-radio-button>
+
+                              <!--  <el-radio-button label="全部"></el-radio-button>
                                 <el-radio-button label="选择题"></el-radio-button>
                                 <el-radio-button label="填空题"></el-radio-button>
                                 <el-radio-button label="计算题"></el-radio-button>
-                                <el-radio-button label="解答题"></el-radio-button>
+                                <el-radio-button label="解答题"></el-radio-button>-->
                             </el-radio-group>
                         </el-col>
                     </el-row>
                     <el-row>
-                        <el-col :span="4" class="my_key">考察能力：</el-col>
-                        <el-col :span="20" class="my_value">
+                        <el-col :span="6" class="my_key">考察能力：</el-col>
+                        <el-col :span="18" class="my_value">
                             <el-radio-group v-model="ability" size="mini">
                                 <el-radio-button label="全部"></el-radio-button>
-                                <el-radio-button label="了解"></el-radio-button>
+                                <el-radio-button :key="obj.node" :label="obj.nodeName" v-for="obj in abilityArr"></el-radio-button>
+                  <!--              <el-radio-button label="了解"></el-radio-button>
                                 <el-radio-button label="理解"></el-radio-button>
                                 <el-radio-button label="掌握"></el-radio-button>
-                                <el-radio-button label="运用"></el-radio-button>
+                                <el-radio-button label="运用"></el-radio-button>-->
                             </el-radio-group>
                         </el-col>
                     </el-row>
                     <el-row>
-                        <el-col :span="4" class="my_key">难度：</el-col>
-                        <el-col :span="20" class="my_value">
+                        <el-col :span="6" class="my_key">难度：</el-col>
+                        <el-col :span="18" class="my_value">
                             <el-radio-group v-model="difficulty" size="mini">
                                 <el-radio-button label="全部"></el-radio-button>
+                                <el-radio-button :key="obj.node" :label="obj.nodeName" v-for="obj in difficultyArr"></el-radio-button>
+<!--                                <el-radio-button label="全部"></el-radio-button>
                                 <el-radio-button label="易"></el-radio-button>
                                 <el-radio-button label="较易"></el-radio-button>
                                 <el-radio-button label="较难"></el-radio-button>
-                                <el-radio-button label="难"></el-radio-button>
+                                <el-radio-button label="难"></el-radio-button>-->
                             </el-radio-group>
                         </el-col>
                     </el-row>
-                    <section :style="{width: '100%' }">
-                        <article :key="question.questionId+ 'min'" :style="{border:  '0.5px solid  #2992FF'}" :id="question.questionId"  v-for="(question, index) in questions.slice((pageNum - 1)*pageSize, pageNum*pageSize)">
-                            <article v-html="question.content">
-                                {{question.content }}
+                    <section id="mySection" :style="{width: '100%' , margin: '0 5px' }">
+                        <article :key="question.tid1+ 'min'" :style="{borderTop:  '0.5px solid  #2992FF'}" :id="question.tid1"  v-for="(question, index) in questions">
+                            <article v-html="question.questionTopiccontext" style="text-align:left;">
+
+                                    {{question.questionTopiccontext}}
+
                             </article>
-                            <footer style="text-align:right;padding:5px" >
+                            <footer style="text-align:right;padding:5px; " >
                                 <el-checkbox fill="#0CC689" text-color="#0CC689"  v-model="question.selected" :checked="Boolean(question.selected)"  @change="(value)=>{
                                     handleChange(value, question)
                                 }">参与组题</el-checkbox>
@@ -62,12 +71,13 @@
                         </article>
 
                     </section>
-                    <footer style="width:100%;margin: 10px auto; bottom:10px;position:absolute;">
+
+                    <footer v-show="Boolean(questions.length)" style="width:100%;margin: 10px auto;top:20px;">
                         <el-pagination
                                 background
                                 layout="prev, pager, next"
                                 :page-size = "pageSize"
-                                :total="questions.length"
+                                :total="totalCount"
                                 @current-change="handleChangeCurrentPage"
                         >
                         </el-pagination>
@@ -124,7 +134,7 @@
     export default {
         data() {
             return {
-                questions: [
+                questions: [ ]/* [
                                {questionId: "1a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
                                 '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
                                 '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
@@ -175,37 +185,7 @@
                                 '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
                                 '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
                     ,{questionId: "3a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt">在△ABC中，角A，B，C的对边分别为<i>a</i>，<i>b</i>，<i>c</i>，若＜0，则△ABC <span class="answer_area">（&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ）</span>. <br/>  <br/>A.一定是锐角三角形&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;B.一定是直角三角形<br/>  <br/>C.一定是钝角三角形&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D.是锐角或直角三角形</p>'}
-/*
-                    ,{questionId: "4a" , title:"第2道题",pageNum: 1, content: '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span'+
-                            '        style="font-family:NEU-BZ">2</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">在等腰</span><span'+
-                            '        style="font-family:NEU-BZ">△</span><span style="font-family:NEU-BZ; font-style:italic">ABC</span><span'+
-                            '        style="font-family:方正书宋_GBK">中</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">=</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AC</span><span style="font-family:方正书宋_GBK">,</span><span'+
-                            '        style="font-family:方正书宋_GBK">其周长为</span><span style="font-family:NEU-BZ">20 cm</span><span'+
-                            '        style="font-family:方正书宋_GBK">,</span><span style="font-family:方正书宋_GBK">则</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span'+
-                            '        style="font-family:方正书宋_GBK">边的取值范围是</span><span'+
-                            '        style="width:2.08pt; display:inline-block">&#xa0;</span><span style="font-family:方正书宋_GBK">(</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　　</span><span style="font-family:方正书宋_GBK">)</span></p>'+
-                            '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">A</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 1 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;4 cm</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '        style="width:21.23pt; display:inline-block">&#xa0;</span><span'+
-                            '        style="font-family:NEU-BZ">B</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '        style="font-family:NEU-BZ"> 5 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'+
-                            '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ">C</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;8 cm</span><span'+
-                            '        style="font-family:方正书宋_GBK; font-style:italic">　</span><span'+
-                            '        style="width:21.82pt; display:inline-block">&#xa0;</span><span'+
-                            '        style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
-                            '        style="font-family:NEU-BZ"> 4 cm&lt;</span><span'+
-                            '        style="font-family:NEU-BZ; font-style:italic">AB</span><span style="font-family:NEU-BZ">&lt;10 cm</span></p>'}
-*/
+
                     ,{questionId: "5a" , title:"第3道题",pageNum: 1, content: ['<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:spaces">&#xa0;</span><span',
                                     '        style="font-family:NEU-BZ">3</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span',
                                     '        style="font-family:NEU-BZ"> </span><span style="font-family:方正书宋_GBK">如图</span><span',
@@ -244,14 +224,14 @@
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img  crossOrigin="anonymous" src="./mock/test.jpg" width="106"    height="178" alt=""   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span style="font-family:NEU-HZ">4</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
-                             /*       '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.004.png" width="152"                           height="133" alt=""                   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
+                             /!*       '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.004.png" width="152"                           height="133" alt=""                   style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span  style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span  style="font-family:NEU-HZ">5</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10.5pt"><img src="./static/math/数学.005.png" width="201"                        height="137" alt=""      style="-aw-left-pos:0pt; -aw-rel-hpos:column; -aw-rel-vpos:paragraph; -aw-top-pos:0pt; -aw-wrap-type:inline"/>',
                                     '</p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:9pt"><span style="font-family:方正黑体_GBK">(</span><span style="font-family:方正黑体_GBK">第</span><span  style="font-family:NEU-HZ">6</span><span style="font-family:方正黑体_GBK">题</span><span style="font-family:方正黑体_GBK">)</span></p>',
                                     '<p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span style="font-family:NEU-BZ; -aw-import:ignore">&#xa0;</span>',
-                                    '</p>*/].join("")}
+                                    '</p>*!/].join("")}
                     ,{questionId: "6a" , title:"第1道题",pageNum: 1, content: '     <p style="margin-top:0pt; margin-bottom:0pt; font-size:10.5pt"><span'+
                             '                                style="font-family:方正书宋_GBK; -aw-import:spaces">&#xa0;</span><span style="font-family:NEU-BZ">1</span><span'+
                             '                                style="font-family:NEU-BZ; font-style:italic">.</span><span style="font-family:NEU-BZ"> </span><span'+
@@ -513,7 +493,7 @@
                             '                                style="font-family:NEU-BZ">D</span><span style="font-family:NEU-BZ; font-style:italic">.</span><span'+
                             '                                style="font-family:NEU-BZ"> 13</span><span style="font-family:方正书宋_GBK">或</span><span'+
                             '                                style="font-family:NEU-BZ">17</span></p>'}
-                ]
+                ]*/
                 , showQuestions: []
                 , loading: false
                 , teachingAssistantId: null
@@ -522,47 +502,23 @@
                 , width: 571
                 , height: 864
 
-                , data: [{
-                    label: '人民教育出版社',
-                    children: [
-                    {
-                        label: '七年级上',
-                        children: [{
-                            label: '第一章有理数',
-                            children: [{
-                                label: '正数和负数'
-                            },{
-                                label: '有理数'
-                            },{
-                                label: '有理数的加减法'
-                            },{
-                                label: '有理数的乘除法'
-                            },{
-                                label: '有理数的乘方'
-                            }
-                            ]
-                        },{
-                            label: '第二章整数的加减'
-                        },{
-                            label: '第三章一元一次方程'
-                        },{
-                            label: '几何图形初步'
-                        }]
-                    },{
-                        label: '七年级下'
-                        },{
-                        label: '八年级上'
-                     }]
-                }],
+                , treeData: [
+
+                ],
                 defaultProps: {
                     children: 'children',
-                    label: 'label'
+                    label: 'nodeName'
                 }
                 , questionType: '全部'
+                , questionTypeArr: []
                 , ability:'全部'
-                ,difficulty: '全部'
+                , abilityArr: []
+                , difficulty: '全部'
+                , difficultyArr: []
                 , pageNum : 1
-                , pageSize: 5
+                , pageSize: 20
+                , totalCount: 0
+                , node: null
             };
         },
         watch:{
@@ -608,7 +564,12 @@
             console.log(this.times);
             this.questions.forEach((question)=>{
                 question.selected = false;
-            })
+            });
+            //取难度系数数据
+            request.getDifficulty().then(res=>{
+                this.difficultyArr = res.data;
+                //this.difficulty = res.data[0].nodeName;
+            });
         },
         mounted(){
             //取所有页码
@@ -651,10 +612,44 @@
                 this.$router.go(-1);
 
             },
-            handleNodeClick(data){
-                console.log(data);
-            },
+            handleNodeClick(data, node, tree){
+                console.log(data, node);
+                if(node.isLeaf)
+                {
+                    this.node = node;
+                    let params = new FormData();
+                    params.append("questionCatalog", node.data.node);
+             /*       let questionBasetype = this.questionTypeArr.find((list)=>list.nodeName === this.questionType);
+                    params.append("questionBasetype", questionBasetype.node);
+                    params.append("questionDifficult", this.difficulty);
+                    params.append("questionAbility", this.ability);*/
+                    params.append("page", 1);
+                    params.append("pageSize", 20);
 
+                    request.getQuestion(params).then((res)=>{
+                        console.log(res.data);
+                        JSON.stringify(res.data.list);
+                        if(res.data.list.length === 0)
+                        {
+                            this.$alert("没有数据");
+                            return;
+                        }
+                        this.questions = res.data.list;
+                        this.totalCount = res.data.count;
+                        this.$nextTick(()=>{
+                            let imgs = document.querySelectorAll("#mySection img");
+                            console.log(imgs[0].src);
+                            imgs.forEach(img=>{
+                                img.src =  img.src.replace(location.origin, "https://syg.hongchentech.com/tiku")//"https://syg.hongchentech.com/tiku/"  + img.src;
+                            });
+                            console.log(imgs[0].src);
+                        });
+
+                        // questionTopiccontext
+
+                    });
+                }
+            },
 
             //checkbox 事件响应
             handleChange(isChecked, question){
@@ -673,9 +668,113 @@
             },
 
             handleChangeCurrentPage(pageNum){
-                console.log(pageNum);
+                console.log("翻页："+pageNum);
                 this.pageNum = pageNum;
+                let params = new FormData();
+                params.append("questionCatalog", this.node.data.node);
+                params.append("page", this.pageNum);
+                params.append("pageSize", this.pageSize);
+                request.getQuestion(params).then((res)=>{
+                    console.log(res.data);
+                    if(res.data.list.length === 0)
+                    {
+                        this.$alert("没有数据");
+                        return;
+                    }
+                    this.questions = res.data.list;
+                    this.$nextTick(()=>{
+                        let imgs = document.querySelectorAll("#mySection img");
+                        imgs.forEach(img=>{
+                            img.src =  img.src.replace(location.origin, "https://syg.hongchentech.com/tiku");
+                        });
+                    });
+                });
             },
+            loadData(node, resolve){
+                console.log(node);
+                if(node.level === 0){
+                    this.getPublish(resolve);
+                }else{
+                    this.getTreeData(node.data, resolve);
+
+                }
+            },
+            //取特定学段下某一科目的数据（相当于初中数学老师登陆了）
+            getPublish(resolve){
+                let self = this;
+                request.getPeriod().then(res1=>{
+                    console.log(res1);
+                    console.log(res1.data[0].node);
+                    let params = new FormData();
+                    params.append("node", res1.data[0].node);
+                    request.getSubject(params).then(res2=>{
+                        console.log(res2);
+                        let params2 = new FormData();
+                        let subject = res2.data[1]; //默认取数学
+                        params2.append("node", subject.node);
+                        request.getPublishingHouse(params2).then(res3=>{
+                            console.log(res3);
+                            self.treeData = res3.data;
+                            resolve(res3.data);
+
+                        });
+
+                        //取考察能力数据
+                        let params3 = new FormData();
+                        params3.append("node", subject.node);
+                        request.getAbility(params3).then(res=>{
+                           self.abilityArr = res.data;
+                           //self.ability = res.data[0].nodeName;
+                        });
+
+                        //取题目类型数据
+                        let params4 = new FormData();
+                        params4.append("node", subject.node);
+                        request.getQuestionType(params4).then(res=>{
+                            self.questionTypeArr = res.data;
+                            //self.questionType = res.data[0].nodeName;
+                        });
+                    });
+                });
+            },
+
+            async getTreeData(data, resolve){
+                let length = data.node.length;
+                let params = new FormData();
+                params.append("node", data.node);
+                switch(length){
+                    case 6:
+                        let {data: grades} = await request.getGrade(params);
+                        resolve(grades);
+                        break;
+                    case 9:
+                        let {data: chapters} = await request.getChapters(params);
+                        resolve(chapters);
+                        break;
+                    case 12:
+                        let {data: sections} = await request.getSections(params);
+                        console.log(sections.length);
+                        //console.log([sections[0], sections[100], sections[200]]);
+                        resolve(sections);
+                        break;
+                    default:
+                        resolve([]);
+                }
+
+            },
+
+/*            async  getPeriod(){
+                let period = await request.getPeriod();
+                //取初中
+                console.log(period);
+                return period;
+            },
+            async  getSubject(params){
+                let subjects = await request.getSubject(params);
+                //取初中
+                return subjects;
+            },*/
+
 
             /*getSelectedQuestion(){
                 let articleDOM = this.getSelectedContents();
@@ -942,18 +1041,19 @@
                     overflow: auto;
                 }
                 .hc-main-content-pic{
-                    border-left: 1px solid @color;
-                    border-right: 1px solid @color;
+                    border-left: 1.5px solid @color;
+                    border-right: 1.5px solid @color;
                     img{
                         width: 100%;
                         background-size: contain;
                     }
                     >.el-row{
-                        height: 35px;
-                        line-height: 35px;
+
                     }
                     .my_key{
                         text-align:right;
+                        height: 35px;
+                        line-height: 35px;
                     }
                     .my_value{
                         text-align: left;

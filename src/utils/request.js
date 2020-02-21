@@ -133,10 +133,118 @@ request.updToken = () => {
     axios.defaults.headers['Authorization'] = token;
 };
 */
-
+//学段
 request.getPeriod = ()=>{
     return new Promise((resolve, reject)=>{
         axios.post("/api/questionDictionary/period", { headers: { 'Content-Type': 'application/json'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
+//学科
+request.getSubject = (params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/api/questionDictionary/subject", params,{ headers: { 'Content-Type': 'multipart/form-data'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
+
+//出版社
+request.getPublishingHouse = (params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/api/questionDictionary/publishingHouse", params,{ headers: { 'Content-Type': 'multipart/form-data'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
+
+//年级
+request.getGrade = (params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/api/questionDictionary/grade", params,{ headers: { 'Content-Type': 'multipart/form-data'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
+//章
+request.getChapters = (params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/api/questionDictionary/chapters", params,{ headers: { 'Content-Type': 'multipart/form-data'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
+//节
+request.getSections = (params)=>{
+    return new Promise((resolve, reject)=>{
+        console.log("sections");
+        axios.post("/api/questionDictionary/sections", params,{ headers: { 'Content-Type': 'multipart/form-data'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
+
+//题目类型  节点，传学科node
+request.getQuestionType = (params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/api/questionDictionary/questionType", params,{ headers: { 'Content-Type': 'multipart/form-data'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
+
+//考察能力  节点，传入学科node
+request.getAbility = (params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/api/questionDictionary/ability", params,{ headers: { 'Content-Type': 'multipart/form-data'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
+
+//难度
+request.getDifficulty = ()=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/api/questionDictionary/difficulty", { headers: { 'Content-Type': 'multipart/form-data'} }).then(res=>{
+            resolve(res.data)
+        }).catch(err=>{
+            reject(err.data);
+        })
+    });
+};
+
+//题目列表
+/**
+ * @param params
+  questionCatalog string 教材目录（节点）
+ questionBasetype  string 基本题型编号（节点）
+ questionKnowledge string 知识点（节点）
+ questionDifficult string 难度（文字）
+ questionAbility string 考查能力（文字）
+ page string 页数
+ pageSize string 条数
+ * @returns {Promise<unknown>}
+ */
+request.getQuestion = (params)=>{
+    return new Promise((resolve, reject)=>{
+        axios.post("/api/questionTable/list", params,  { headers: { 'Content-Type': 'multipart/form-data'} }).then(res=>{
             resolve(res.data)
         }).catch(err=>{
             reject(err.data);
