@@ -7,7 +7,7 @@
                     <!--      :http-request="handSend"
 
 -->
-                     <el-upload
+               <!--      <el-upload
                              class="hc-main-header-upload"
                              ref="upload"
                              action="http://localhost:8080"
@@ -17,9 +17,9 @@
                              :show-file-list="false"
                              :auto-upload="true">
                          <el-button slot="trigger" size="small" type="primary">上传文件</el-button>
-                         <!--         "https://jsonplaceholder.typicode.com/posts/"                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+                         &lt;!&ndash;         "https://jsonplaceholder.typicode.com/posts/"                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>&ndash;&gt;
                      </el-upload>
-                    <span>支持扩展名：.doc .docx</span>
+                    <span>支持扩展名：.doc .docx</span>-->
                    <!-- <el-date-picker size="medium"
                             v-model="year"
                             type="year"
@@ -34,7 +34,7 @@
                     <el-button class="hc-main-selected-search" size="small" type="primary" @click="search()">搜索</el-button>-->
                 </el-col>
                 <el-col :span="4" class="second">
-                    <el-button size="small" type="primary" @click="add()">导入审题库</el-button>
+<!--                    <el-button size="small" type="primary" @click="add()">导入审题库</el-button>-->
                 </el-col>
 
             </el-row>

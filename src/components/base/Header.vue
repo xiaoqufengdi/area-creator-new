@@ -1,23 +1,9 @@
 <template>
         <el-row class="hc-header">
-            <el-col :xs="3" :md="4" :lg="5"> </el-col>
-            <el-col :xs="18" :md="16" :lg="14">
+            <el-col :xs="1" :md="2" :lg="3"> </el-col>
+            <el-col :xs="6" :md="5" :lg="4" ><img class="hc-header-logo"  src="../../assets/logo.png" alt="pic"><div class="hc-header-title">三有果教育管理系统</div> </el-col>
+            <el-col :xs="16" :md="15" :lg="14">
                 <el-row class="hc-header-center"  ><!-- style="border: 0.5px solid orange !important;"-->
-                    <el-col :span="6" style="text-align:left;">
-                        <img class="hc-header-nav_img"
-                             src="../../assets/ic_person@2x.png"/>
-                        <el-popover
-                                placement="bottom"
-                                width="100"
-                                trigger="click">
-                            <el-menu   @select="handleSelect"  class="el-menu-sub"
-                            >
-                                <el-menu-item index="login" tabindex="-1">退出</el-menu-item>
-                            </el-menu>
-
-                            <span slot="reference" class="hc-header-nav_name">{{"admin"}}<img class="hc-header_img_arrow" src="../../assets/ic_arrow_white@2x.png" alt=""></span>
-                        </el-popover>
-                    </el-col>
                     <el-col :span="18">
                         <!--菜单区域-->
                         <el-menu class="hc-header-menu"
@@ -32,9 +18,23 @@
                             </template>
                         </el-menu>
                     </el-col>
+                    <el-col :span="6" style="text-align:right;">
+                        <img class="hc-header-nav_img"
+                             src="../../assets/ic_person@2x.png"/>
+                        <el-popover
+                                placement="bottom"
+                                width="100"
+                                trigger="click">
+                            <el-menu   @select="handleSelect"  class="el-menu-sub"
+                            >
+                                <el-menu-item index="login" tabindex="-1">退出</el-menu-item>
+                            </el-menu>
+                            <span slot="reference" class="hc-header-nav_name">{{"admin"}}<img class="hc-header_img_arrow" src="../../assets/ic_arrow_white@2x.png" alt=""></span>
+                        </el-popover>
+                    </el-col>
                 </el-row>
             </el-col>
-            <el-col :xs="3" :md="4" :lg="5"></el-col>
+            <el-col :xs="1" :md="2" :lg="3"></el-col>
         </el-row>
 </template>
 <script>
@@ -83,6 +83,28 @@
     .hc-header .el-col{
         height: 100%;
         line-height: 100%;
+    }
+    .hc-header-logo{
+        position:relative;
+        top: 8px;
+        width: 24px;
+        height: 24px;
+        margin: 0 10px;
+    }
+    .hc-header-title{
+        display: inline-block;
+        height: 100%;
+        line-height: 100%;
+        font-size:16px;
+        font-family:Microsoft YaHei;
+        font-weight:bold;
+        color:rgba(255,255,255,1);
+    }
+    .hc-header-title::before{
+        display: inline-block;
+        content: "";
+        height: 100%;
+        vertical-align: middle;
     }
     .hc-header-center, .hc-header-center .el-col{
         height: 100%;

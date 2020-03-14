@@ -32,7 +32,7 @@ const mutations = {
 
                 },*/
                     {
-                    title: "教辅管理",
+                    title: "学科学情",
                     name: "TeachingAssistantManagement",
                     path: "/index/teaching-assistant-management"
                 }

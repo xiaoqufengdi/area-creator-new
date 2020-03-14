@@ -5,7 +5,6 @@
 let URL = {};
 
 URL.System = {
-    // 'login': '/gatewayAction/auth'
     "login": "/teacherInfo/v1/login"
 };
 
