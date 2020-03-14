@@ -1,9 +1,9 @@
 # area-creator-new
 
-> 题库组题圈码
+> 三有果pc端
 
 ##项目简介
-三有果组题圈码系统
+三有果pc端
 ##技术栈
 vue+router+vuex+webpack
 
